@@ -1,0 +1,14 @@
+{
+  "name": "log_monitoring",
+  "version": "1.0.0",
+  "description": "Application used to pull Docker Logs and Cassandra Logs from SweepEnergy and push to SweepAPI, to be used for Time-Series Metric Data Analysis",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Solomon Denning, Apsara Fite, Louis Perez, David Chu",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
