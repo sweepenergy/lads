@@ -1,5 +1,5 @@
 import './App.css';
-import Agent from './Agents.js';
+import Agent from './Agent.js';
 
 
 function getAgents(){
