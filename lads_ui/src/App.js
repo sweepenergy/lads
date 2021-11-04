@@ -1,24 +1,32 @@
-import logo from './logo.svg';
 import './App.css';
+import Agent from './Agents.js';
+
+
+function getAgents(){
+  return (
+    <div class="row">
+      <div class="col">
+        <Agent id="1001" />
+      </div>
+      <div class="col">
+        <Agent id="1002" />
+      </div>
+    </div>
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+  <div className="App">
+    <header className="App-header">
+      <h2>sweep.</h2>
+    </header>
+    <body className="App-body">
+        <div class="container-fluid">
+          {getAgents()}
+        </div>
+    </body>
+  </div>
   );
 }
 
