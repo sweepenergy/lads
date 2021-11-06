@@ -58,7 +58,7 @@ These are the major frameworks and libraries used for creating this project.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
+This is how to install the necessary dependencies.
 * npm
   ```sh
   npm install npm@latest -g
