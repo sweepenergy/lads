@@ -47,6 +47,7 @@ These are the major frameworks and libraries used for creating this project.
 
 
 <!-- GETTING STARTED -->
+## Getting Started
 
 ### Prerequisites
 
