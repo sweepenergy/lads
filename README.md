@@ -27,6 +27,11 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+SweepEnergy develops IOT hardware/software technologies for the industry. One of their technologies, SweepAPI, is used to collect time-series metric data of their clients’ programs. This data is analyzed and used by admin to create better solutions for their clients. SweepEnergy handles dozens of Docker Containers through multiple servers. However, collecting the log data for both Docker and their Cassandra Database is currently done manually. 
+
+Our team is tasked with pulling logs data from Docker Containers and Cassandra Database on multiple servers, and preparing these logs files to be sent to SweepAPI.
+SweepEnergy wants a UI that can be accessed by their admins. From this landing page, the admin can specify which locations to pull logs. Locations are categorized by agents.
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
