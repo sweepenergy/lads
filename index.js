@@ -73,6 +73,26 @@ function getDirectoryByID() {
   });
 }
 
+function postStream() {
+  var axios = require('axios');
+  var data = '{\n    "directory_id": "{{directory_id}}",\n    "name": "test stream name",\n    "inputDataVar": [\n        {\n            "var_name": "voltage_b",\n            "display_name": "Voltage b",\n            "description": "Voltage b amps",\n            "units": "volts",\n            "type": "number"\n        },\n        {\n            "var_name": "current_b",\n            "display_name": "Current b",\n            "description": "Current b amps",\n            "units": "amps",\n            "type": "number"\n        },\n        {\n            "var_name": "log_maintenance",\n            "display_name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "units": "unitless",\n            "type": "text"\n        }\n    ]\n}';
+
+  var config = {
+    method: 'post',
+    url: 'https://api.sweepapi.com/stream',
+    headers: { Authorization: `Bearer ${auth_token}` },
+    data : data
+  };
+
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
 
 getHomeDirectory()
 getDirectoryByID()
+postStream()
