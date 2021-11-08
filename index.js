@@ -27,11 +27,11 @@ function getHomeDirectory() {
     });
 }
 
-function postDirectory() {
+function postDirectory(name, ID = "") {
   var axios = require('axios');
   var data = JSON.stringify({
-    "name": "Building C",
-    "dirtop": ""
+    "name": name,
+    "dirtop": ID
   });
 
   var config = {
@@ -53,10 +53,10 @@ function postDirectory() {
   });
 }
 
-function getDirectoryByID() {
+function getDirectoryByID(directory_id) {
   var axios = require('axios');
   // Currently set to home directory id
-  var directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
+  directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
 
   var config = {
     method: 'get',
@@ -93,6 +93,10 @@ function postStream() {
   });
 }
 
-getHomeDirectory()
+postDirectory("Home")
+homeID = getHomeDirectory()
+postDirectory("Docker",homeID)
+postDirectory("Server",homeID)
+
 getDirectoryByID()
-//postStream()
+postStream()
