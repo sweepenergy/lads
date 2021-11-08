@@ -27,4 +27,52 @@ function getHomeDirectory() {
     });
 }
 
+function postDirectory() {
+  var axios = require('axios');
+  var data = JSON.stringify({
+    "name": "Building C",
+    "dirtop": ""
+  });
+
+  var config = {
+    method: 'post',
+    url: 'https://api.sweepapi.com/directory',
+    headers: { 
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth_token}`
+    },
+    data : data
+};
+
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+function getDirectoryByID() {
+  var axios = require('axios');
+  // Currently set to home directory id
+  var directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
+
+  var config = {
+    method: 'get',
+    url: 'https://api.sweepapi.com/directory/' + directory_id,
+    headers: { Authorization: `Bearer ${auth_token}` }
+  };
+
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+
 getHomeDirectory()
+getDirectoryByID()
