@@ -34,9 +34,14 @@ function postDirectory(name, ID = "") {
     "dirtop": ID
   });
 
+  temp = ID
+  if (ID == ""){
+    temp = "home"
+  }
+
   var config = {
     method: 'post',
-    url: 'https://api.sweepapi.com/directory',
+    url: 'https://api.sweepapi.com/directory/' + temp,
     headers: { 
       'Content-Type': 'application/json',
       Authorization: `Bearer ${auth_token}`
@@ -67,6 +72,7 @@ function getDirectoryByID(directory_id) {
   axios(config)
   .then(function (response) {
     console.log(JSON.stringify(response.data));
+    //return response.data
   })
   .catch(function (error) {
     console.log(error);
@@ -93,10 +99,6 @@ function postStream() {
   });
 }
 
-postDirectory("Home")
-homeID = getHomeDirectory()
-postDirectory("Docker",homeID)
-postDirectory("Server",homeID)
-
-getDirectoryByID()
-postStream()
+homeID = "497f225b-7769-4d64-96fb-0ae232eee090"
+//postDirectory("Docker",homeID)
+getDirectoryByID("497f225b-7769-4d64-96fb-0ae232eee090")
