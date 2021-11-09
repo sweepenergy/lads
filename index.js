@@ -61,7 +61,7 @@ function postDirectory(name, ID = "") {
 function getDirectoryByID(directory_id) {
   var axios = require('axios');
   // Currently set to home directory id
-  directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
+  //directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
 
   var config = {
     method: 'get',
