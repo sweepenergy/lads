@@ -78,8 +78,32 @@ async function getDirectoryByID(directory_id) {
   } 
 }
 
-// POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
+// POST Stream from SweepAPI: Creates a stream id
+// FIXME: Currently sends data correctly. Need to modify function to return StreamID
 function postStream() {
+  var data = '{\n    "directory_id": "b22ca0b7-713e-40e4-a70e-e8cca87bdeba",\n    "name": "docker_4",\n    "ts": [\n        {\n            "id": "voltage_b",\n            "name": "Voltage b",\n            "description": "Voltage b amps",\n            "unit": "volts",\n            "type": "number"\n        },\n        {\n            "id": "current_b",\n            "name": "Current b",\n            "description": "Current b amps",\n            "unit": "amps",\n            "type": "number"\n        },\n        {\n            "id": "log_maintenance",\n            "name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "unit": "unitless",\n            "type": "text"\n        }\n    ]\n}';
+
+  var config = {
+    method: 'post',
+    url: 'https://api.sweepapi.com/directory/' + 'b22ca0b7-713e-40e4-a70e-e8cca87bdeba' + '/stream',
+    headers: { 
+      'Content-Type': 'application/json', 
+      Authorization: `Bearer ${auth_token}`
+    },
+    data : data
+  };
+
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+// POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
+function postStreamDataset() {
   var data = '{\n    "directory_id": "{{directory_id}}",\n    "name": "test stream name",\n    "inputDataVar": [\n        {\n            "var_name": "voltage_b",\n            "display_name": "Voltage b",\n            "description": "Voltage b amps",\n            "units": "volts",\n            "type": "number"\n        },\n        {\n            "var_name": "current_b",\n            "display_name": "Current b",\n            "description": "Current b amps",\n            "units": "amps",\n            "type": "number"\n        },\n        {\n            "var_name": "log_maintenance",\n            "display_name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "units": "unitless",\n            "type": "text"\n        }\n    ]\n}';
 
   var config = {
@@ -104,11 +128,11 @@ getHomeDirectory().then(response => {
   //console.log(temp)
 });
 
-// .then function for getDirectoryByID
-getDirectoryByID().then(response => {
-  directory_info_by_id = response;
-  //console.log(temp)
-});
+// // .then function for getDirectoryByID
+// getDirectoryByID().then(response => {
+//   directory_info_by_id = response;
+//   //console.log(temp)
+// });
 
 // made main function an async function
 // basically if we want to do the same for every other function
@@ -116,6 +140,8 @@ getDirectoryByID().then(response => {
 async function main() {
   home_Directory = await getHomeDirectory()
   console.log(home_Directory)
+  console.log(JSON.parse(home_Directory).id)
+  postStream()
   //console.log(temp)
 }
   
