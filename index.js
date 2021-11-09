@@ -108,7 +108,7 @@ getHomeDirectory().then(response => {
 // we follow the format as such
 async function main() {
   home_Directory = await getHomeDirectory()
-  console.log(home_Directory.type)
+  console.log(home_Directory)
   //console.log(temp)
 }
   
