@@ -60,7 +60,7 @@ function postDirectory(name, ID = "") {
 }
 
 // GET Directory Given ID from SweepAPI: Takes a directory ID, and returns a directory name
-function getDirectoryByID(directory_id) {
+async function getDirectoryByID(directory_id) {
   // Currently set to home directory id
   // directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
 
