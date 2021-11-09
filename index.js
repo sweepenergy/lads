@@ -30,7 +30,6 @@ async function getHomeDirectory() {
 // POST Create Directory from SweepAPI: Takes a directory name and returns a new directory
 //If ID is empty, the directory is created in home
 function postDirectory(name, ID = "") {
-  var axios = require('axios');
   var data = JSON.stringify({
     "name": name,
     "dirtop": ID
@@ -62,9 +61,8 @@ function postDirectory(name, ID = "") {
 
 // GET Directory Given ID from SweepAPI: Takes a directory ID, and returns a directory name
 function getDirectoryByID(directory_id) {
-  var axios = require('axios');
   // Currently set to home directory id
-  //directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
+  // directory_id = "497f225b-7769-4d64-96fb-0ae232eee090"
 
   var config = {
     method: 'get',
@@ -72,23 +70,21 @@ function getDirectoryByID(directory_id) {
     headers: { Authorization: `Bearer ${auth_token}` }
   };
 
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  try {
+    const response = await axios(config);
+    return JSON.stringify(response.data)
+  } catch (error){
+    console.log(error)
+  } 
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
 function postStream() {
-  var axios = require('axios');
   var data = '{\n    "directory_id": "{{directory_id}}",\n    "name": "test stream name",\n    "inputDataVar": [\n        {\n            "var_name": "voltage_b",\n            "display_name": "Voltage b",\n            "description": "Voltage b amps",\n            "units": "volts",\n            "type": "number"\n        },\n        {\n            "var_name": "current_b",\n            "display_name": "Current b",\n            "description": "Current b amps",\n            "units": "amps",\n            "type": "number"\n        },\n        {\n            "var_name": "log_maintenance",\n            "display_name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "units": "unitless",\n            "type": "text"\n        }\n    ]\n}';
 
   var config = {
     method: 'post',
-    url: 'https://api.sweepapi.com/stream',
+    url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
     headers: { Authorization: `Bearer ${auth_token}` },
     data : data
   };
@@ -104,7 +100,13 @@ function postStream() {
 
 // .then function for getHomeDirectory
 getHomeDirectory().then(response => {
-  directory_info = response;
+  directory_info_home = response;
+  //console.log(temp)
+});
+
+// .then function for getHomeDirectory
+getDirectoryByID().then(response => {
+  directory_info_by_id = response;
   //console.log(temp)
 });
 
