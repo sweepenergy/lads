@@ -11,27 +11,21 @@ app.use(helmet());
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
-function getHomeDirectory() {
+async function getHomeDirectory() {
     var config = {
-        method: 'get',
-  	url: 'https://api.sweepapi.com/directory/home',
-  	headers: { Authorization: `Bearer ${auth_token}` }
+      method: 'get',
+  	  url: 'https://api.sweepapi.com/directory/home',
+  	  headers: { Authorization: `Bearer ${auth_token}` }
     };
 
-    let jsonString = ""
-
-    axios(config)
-    .then(function (response) {
-  	console.log(JSON.stringify(response.data))
-    jsonString = JSON.stringify(response.data);
-    })
-    .catch(function (error) {
-  	console.log(error);
-    });
-
-    return jsonString
+    try {
+      const response = await axios(config);
+      return JSON.stringify(response.data)
+    } catch (error){
+      console.log(error)
+    } 
 }
-
+  
 function postDirectory(name, ID = "") {
   var axios = require('axios');
   var data = JSON.stringify({
@@ -103,6 +97,19 @@ function postStream() {
   });
 }
 
-homeID = getHomeDirectory().id
-//postDirectory("Docker",homeID)
-getDirectoryByID(homeID)
+// .then function for getHomeDirectory
+getHomeDirectory().then(response => {
+  directory_info = response;
+  //console.log(temp)
+});
+
+// made main function an async function
+// basically if we want to do the same for every other function
+// we follow the format as such
+async function main() {
+  home_Directory = await getHomeDirectory()
+  console.log(home_Directory.type)
+  //console.log(temp)
+}
+  
+main().catch(console.log)
