@@ -11,6 +11,7 @@ app.use(helmet());
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
+// GET Home Directory from SweepAPI: Returns a JSON object with home directory information, most importantly is ID
 async function getHomeDirectory() {
     var config = {
       method: 'get',
@@ -26,6 +27,8 @@ async function getHomeDirectory() {
     } 
 }
   
+// POST Create Directory from SweepAPI: Takes a directory name and returns a new directory
+//If ID is empty, the directory is created in home
 function postDirectory(name, ID = "") {
   var axios = require('axios');
   var data = JSON.stringify({
@@ -46,7 +49,7 @@ function postDirectory(name, ID = "") {
       Authorization: `Bearer ${auth_token}`
     },
     data : data
-};
+  };
 
   axios(config)
   .then(function (response) {
@@ -57,6 +60,7 @@ function postDirectory(name, ID = "") {
   });
 }
 
+// GET Directory Given ID from SweepAPI: Takes a directory ID, and returns a directory name
 function getDirectoryByID(directory_id) {
   var axios = require('axios');
   // Currently set to home directory id
@@ -77,6 +81,7 @@ function getDirectoryByID(directory_id) {
   });
 }
 
+// POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
 function postStream() {
   var axios = require('axios');
   var data = '{\n    "directory_id": "{{directory_id}}",\n    "name": "test stream name",\n    "inputDataVar": [\n        {\n            "var_name": "voltage_b",\n            "display_name": "Voltage b",\n            "description": "Voltage b amps",\n            "units": "volts",\n            "type": "number"\n        },\n        {\n            "var_name": "current_b",\n            "display_name": "Current b",\n            "description": "Current b amps",\n            "units": "amps",\n            "type": "number"\n        },\n        {\n            "var_name": "log_maintenance",\n            "display_name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "units": "unitless",\n            "type": "text"\n        }\n    ]\n}';
