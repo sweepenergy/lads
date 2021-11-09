@@ -104,7 +104,7 @@ getHomeDirectory().then(response => {
   //console.log(temp)
 });
 
-// .then function for getHomeDirectory
+// .then function for getDirectoryByID
 getDirectoryByID().then(response => {
   directory_info_by_id = response;
   //console.log(temp)
