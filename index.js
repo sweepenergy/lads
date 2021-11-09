@@ -18,13 +18,18 @@ function getHomeDirectory() {
   	headers: { Authorization: `Bearer ${auth_token}` }
     };
 
+    let jsonString = ""
+
     axios(config)
     .then(function (response) {
-  	console.log(JSON.stringify(response.data));
+  	console.log(JSON.stringify(response.data))
+    jsonString = JSON.stringify(response.data);
     })
     .catch(function (error) {
   	console.log(error);
     });
+
+    return jsonString
 }
 
 function postDirectory(name, ID = "") {
@@ -72,7 +77,6 @@ function getDirectoryByID(directory_id) {
   axios(config)
   .then(function (response) {
     console.log(JSON.stringify(response.data));
-    //return response.data
   })
   .catch(function (error) {
     console.log(error);
@@ -99,6 +103,6 @@ function postStream() {
   });
 }
 
-homeID = "497f225b-7769-4d64-96fb-0ae232eee090"
+homeID = getHomeDirectory().id
 //postDirectory("Docker",homeID)
-getDirectoryByID("497f225b-7769-4d64-96fb-0ae232eee090")
+getDirectoryByID(homeID)
