@@ -12,8 +12,9 @@ app.use(helmet());
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
+// Runs a shell command, currently runs docker ps and outputs to console in JSON format
 function execCommand() {
-  exec("ls -la", (error, stdout, stderr) => {
+  exec("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\"}'", (error, stdout, stderr) => {
     if (error) {
         console.log(`error: ${error.message}`);
         return;
