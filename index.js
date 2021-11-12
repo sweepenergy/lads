@@ -1,6 +1,7 @@
 const express = require("express");
 const axios = require('axios');
 const helmet = require("helmet");
+const { exec } = require("child_process");
 require('dotenv').config()
 
 const app = express();
@@ -10,6 +11,20 @@ app.use(helmet());
 // AUTH INFO
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
+
+function execCommand() {
+  exec("ls -la", (error, stdout, stderr) => {
+    if (error) {
+        console.log(`error: ${error.message}`);
+        return;
+    }
+    if (stderr) {
+        console.log(`stderr: ${stderr}`);
+        return;
+    }
+    console.log(`stdout: ${stdout}`);
+  });
+}
 
 // GET Home Directory from SweepAPI: Returns a JSON object with home directory information, most importantly is ID
 async function getHomeDirectory() {
@@ -141,9 +156,10 @@ getHomeDirectory().then(response => {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  let home_info = await getHomeDirectory()
-  let home_info_id = JSON.parse(home_info).directory[0].id
-  postStream(home_info_id, "tempName1312")
+  // let home_info = await getHomeDirectory()
+  // let home_info_id = JSON.parse(home_info).directory[0].id
+  // postStream(home_info_id, "tempName1312")
+  execCommand()
   //console.log(home_Directory)
   //console.log(temp)
 }
