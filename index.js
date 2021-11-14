@@ -2,6 +2,7 @@ const express = require("express");
 const axios = require('axios');
 const helmet = require("helmet");
 const { exec } = require("child_process");
+const { stdout } = require("process");
 require('dotenv').config()
 
 const app = express();
@@ -13,20 +14,32 @@ auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
 // Runs a shell command, currently runs docker ps and outputs to console in JSON format
-function execCommand() {
-  exec("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\"}'", (error, stdout, stderr) => {
+function execCommand(command, callback) {
+  exec(command, function (error, stdout, stderr) {
     if (error) {
-        console.log(`error: ${error.message}`);
-        return;
+        callback(stderr);
     }
-    if (stderr) {
-        console.log(`stderr: ${stderr}`);
-        return;
-    }
-    console.log(`stdout: ${stdout}`);
+    else { callback(stdout); }
   });
 }
-
+//Runs shell command docker ps and docker logs to 
+function getLogID() {
+  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\"}'", function(result) {
+    var temp = result.split("\n");
+    var containerList = [];
+    for (var i=0; i < temp.length - 1; i++) {
+      containerList[i] = JSON.parse(temp[i]);
+      console.log(containerList[i]);
+    }
+    
+    for (var i=0; i < containerList.length; i++) {
+      let id = containerList[i].ID;
+      execCommand("docker logs " + id, function(result) {
+        console.log("Container Log " + id + ":\n" + result)
+      });
+    }
+  });
+}
 // GET Home Directory from SweepAPI: Returns a JSON object with home directory information, most importantly is ID
 async function getHomeDirectory() {
     var config = {
@@ -160,7 +173,8 @@ async function main() {
   // let home_info = await getHomeDirectory()
   // let home_info_id = JSON.parse(home_info).directory[0].id
   // postStream(home_info_id, "tempName1312")
-  execCommand()
+  getLogID();
+  //execCommand();
   //console.log(home_Directory)
   //console.log(temp)
 }
