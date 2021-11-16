@@ -51,6 +51,7 @@ function getDockerLogID() {
   });
 }
 
+// Verifies if the user is authenticated, returns a status code of 200 if so
 function verifyUser(){
   var config = {
     method: 'get',
