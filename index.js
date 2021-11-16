@@ -144,16 +144,37 @@ function postStream(id, name) {
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
-function postStreamDataset() {
-  var data = '{\n    "directory_id": ' + directory_id + ',\n    "name": "test stream name",\n    "inputDataVar": [\n        {\n            "var_name": "voltage_b",\n            "display_name": "Voltage b",\n            "description": "Voltage b amps",\n            "units": "volts",\n            "type": "number"\n        },\n        {\n            "var_name": "current_b",\n            "display_name": "Current b",\n            "description": "Current b amps",\n            "units": "amps",\n            "type": "number"\n        },\n        {\n            "var_name": "log_maintenance",\n            "display_name": "Maintenance Log",\n            "description": "Maintenance Log over time",\n            "units": "unitless",\n            "type": "text"\n        }\n    ]\n}';
-
+function postStreamDataset(stream_id, ts_param_text, time_series) {
+  // takes in an array of tuples: [timestamp, data]
+  var data = JSON.stringify([
+    [
+      "",
+      "hello"
+    ],
+    [
+      "",
+      "world"
+    ],
+    [
+      "",
+      "I'm"
+    ],
+    [
+      "",
+      "here"
+    ]
+  ]);
+  
   var config = {
     method: 'post',
-    url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
-    headers: { Authorization: `Bearer ${auth_token}` },
+    url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/ ' + ts_param_text + '/dataset',
+    headers: { 
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${auth_token}`
+    },
     data : data
   };
-
+  
   axios(config)
   .then(function (response) {
     console.log(JSON.stringify(response.data));
