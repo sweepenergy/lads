@@ -74,14 +74,14 @@ function postDirectory(name, ID = "") {
     "dirtop": ID
   });
 
-  temp = ID
+  curr_directory = ID
   if (ID == ""){
-    temp = "home"
+    curr_directory = "home"
   }
 
   var config = {
     method: 'post',
-    url: 'https://api.sweepapi.com/directory/' + temp,
+    url: 'https://api.sweepapi.com/directory/' + curr_directory,
     headers: { 
       'Content-Type': 'application/json',
       Authorization: `Bearer ${auth_token}`
