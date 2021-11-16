@@ -183,7 +183,7 @@ async function main() {
   // let home_info = await getHomeDirectory()
   // let home_info_id = JSON.parse(home_info).directory[0].id
   // postStream(home_info_id, "tempName1312")
-  RFCToISO();
+  //RFCToISO();
   getDockerLogID();
   //execCommand();
   //console.log(home_Directory)
