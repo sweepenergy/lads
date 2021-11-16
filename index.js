@@ -22,8 +22,17 @@ function execCommand(command, callback) {
     else { callback(stdout); }
   });
 }
+
+//Takes in a RFC 3339 timestamp and conver it to ISO 
+function RFCToISO(logline) {
+  //let logLine = new Date("2021-11-15T23:51:31.492743800Z");
+  let rfcStr = Date(logLine.split(" ")[0]);
+  let isoStr = logLine.toISOString();
+  console.log(isoStr);
+
+}
 //Runs shell command docker ps and docker logs to 
-function getLogID() {
+function getDockerLogID() {
   execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
@@ -34,7 +43,8 @@ function getLogID() {
     
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
-      execCommand("docker logs " + id, function(result) {
+      execCommand("docker logs -t " + id, function(result) {
+      //execCommand("docker logs -t " + id + " > " + id + ".txt", function(result) {
         console.log("Container Log " + id + ":\n" + result)
       });
     }
@@ -173,7 +183,8 @@ async function main() {
   // let home_info = await getHomeDirectory()
   // let home_info_id = JSON.parse(home_info).directory[0].id
   // postStream(home_info_id, "tempName1312")
-  getLogID();
+  RFCToISO();
+  getDockerLogID();
   //execCommand();
   //console.log(home_Directory)
   //console.log(temp)
