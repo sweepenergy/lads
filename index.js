@@ -50,6 +50,23 @@ function getDockerLogID() {
     }
   });
 }
+
+function verifyUser(){
+  var config = {
+    method: 'get',
+    url: 'https://api.sweepapi.com/account/verify_auth',
+    headers: { Authorization: `Bearer ${auth_token}` }
+  };
+  
+  axios(config)
+  .then(function (response) {
+    console.log(JSON.stringify(response.data));
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
 // GET Home Directory from SweepAPI: Returns a JSON object with home directory information, most importantly is ID
 async function getHomeDirectory() {
     var config = {
