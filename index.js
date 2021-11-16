@@ -144,7 +144,7 @@ function postStream(id, name) {
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
-function postStreamDataset(stream_id, ts_param_text, time_series) {
+function postStreamDataset(stream_id, ts_param_text, ts) {
   // takes in an array of tuples: [timestamp, data]
   var data = JSON.stringify([
     [
