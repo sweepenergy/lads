@@ -4,12 +4,12 @@ import Agent from './Agent.js';
 
 function getAgents(){
   return (
-    <div class="row">
-      <div class="col">
-        <Agent id="1001" />
+    <div className="row">
+      <div className="col">
+        <Agent id="Docker" />
       </div>
-      <div class="col">
-        <Agent id="1002" />
+      <div className="col">
+        <Agent id="Cassandra" />
       </div>
     </div>
   );
@@ -18,14 +18,14 @@ function getAgents(){
 function App() {
   return (
   <div className="App">
-    <header className="App-header">
+    <div className="App-header">
       <h2>sweep.</h2>
-    </header>
-    <body className="App-body">
-        <div class="container-fluid">
+    </div>
+    <div className="App-body">
+        <div className="container-fluid">
           {getAgents()}
         </div>
-    </body>
+    </div>
   </div>
   );
 }

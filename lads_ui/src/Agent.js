@@ -1,5 +1,6 @@
 import React from 'react';
 import './App.css';
+import {getJSON} from './testLogs.js';
 
 class Log extends React.Component {
 	render(){
@@ -11,17 +12,21 @@ class Log extends React.Component {
 
 class Agent extends React.Component {
 	getLogs(){
+		var json = getJSON();
+		//console.log(json);
 		var logs = [];
-		for (var i = 0; i < 8; i++){
-			logs.push(<p>log {i} </p>);
+		//console.log(json[1].id);
+		for (let key in json){
+			logs.push(<div className="row"><div className="col">{json[key].id}</div><div className="col">{json[key].date}</div></div>);
 		}
 		return (logs);
 	}
+		
 	render(){
 		return(
 			<div className="Agent">
 				<div className="Agent-header"><h4>Agent {this.props.id}</h4></div>
-				<div class="container">
+				<div className="container">
 					{this.getLogs()}
 				</div>
 			</div>
