@@ -3,6 +3,8 @@ const axios = require('axios');
 const helmet = require("helmet");
 const { exec } = require("child_process");
 const { stdout } = require("process");
+const fs = require('fs');
+const e = require("express");
 require('dotenv').config()
 
 const app = express();
@@ -42,7 +44,14 @@ function getDockerLogID() {
     }
     var containerJSONArr = JSON.stringify(containerList);
     console.log(containerJSONArr);
-    execCommand(JSON.stringify(containerList) + " > containersJSON.json", function(result){});
+    fs.writeFile('containersJSON.json', containerJSONArr, err => {
+      if (err) {
+        console.log('Error writing file', err)
+      } else {
+        console.log('Successfully wrote file')
+      }
+    })
+    //execCommand(JSON.stringify(containerJSONArr) + " > containersJSON.json", function(result){});
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
       execCommand("docker logs -t " + id + " > " + id + ".txt", function(result) {});
