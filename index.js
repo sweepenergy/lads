@@ -26,15 +26,15 @@ function execCommand(command, callback) {
 
 //Runs shell command docker ps and docker logs to 
 function getDockerLogID() {
+  //Outputs Containers' info and formats it into JSON object
   execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
     for (var i=0; i < temp.length - 1; i++) {
       containerList[i] = JSON.parse(temp[i]);
-      //console.log(containerList[i]);
     }
     var containerJSONArr = JSON.stringify(containerList, null, 2);
-    //console.log(containerJSONArr);
+    //Creates .json with containers' information
     fs.writeFile('containersJSON.json', containerJSONArr, err => {
       if (err) {
         console.log('Error writing file', err)
@@ -42,7 +42,7 @@ function getDockerLogID() {
         console.log('Successfully wrote file')
       }
     })
-    //execCommand(JSON.stringify(containerJSONArr) + " > containersJSON.json", function(result){});
+    //Iterates through containers' list to grab logs
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
       execCommand("docker logs -t " + id, function(result) {
@@ -58,6 +58,7 @@ function getDockerLogID() {
           var streamData = [isoStr, logLine];
           streamPackage[j] = streamData;
         }
+        //Writes Stream Package into a .txt file
         fs.writeFile(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
           if (err) {
             console.log('Error writing file', err)
