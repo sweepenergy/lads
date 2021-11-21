@@ -33,20 +33,19 @@ function RFCToISO(logline) {
 }
 //Runs shell command docker ps and docker logs to 
 function getDockerLogID() {
-  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\"}'", function(result) {
+  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
     for (var i=0; i < temp.length - 1; i++) {
       containerList[i] = JSON.parse(temp[i]);
-      console.log(containerList[i]);
+      //console.log(containerList[i]);
     }
-    
+    var containerJSONArr = JSON.stringify(containerList);
+    console.log(containerJSONArr);
+    execCommand(JSON.stringify(containerList) + " > containersJSON.json", function(result){});
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
-      execCommand("docker logs -t " + id, function(result) {
-      //execCommand("docker logs -t " + id + " > " + id + ".txt", function(result) {
-        console.log("Container Log " + id + ":\n" + result)
-      });
+      execCommand("docker logs -t " + id + " > " + id + ".txt", function(result) {});
     }
   });
 }
