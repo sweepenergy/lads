@@ -4,7 +4,6 @@ const helmet = require("helmet");
 const { exec } = require("child_process");
 const { stdout } = require("process");
 const fs = require('fs');
-const e = require("express");
 require('dotenv').config()
 
 const app = express();
@@ -25,14 +24,6 @@ function execCommand(command, callback) {
   });
 }
 
-//Takes in a RFC 3339 timestamp and conver it to ISO 
-function RFCToISO(logline) {
-  //let logLine = new Date("2021-11-15T23:51:31.492743800Z");
-  let rfcStr = Date(logLine.split(" ")[0]);
-  let isoStr = logLine.toISOString();
-  console.log(isoStr);
-
-}
 //Runs shell command docker ps and docker logs to 
 function getDockerLogID() {
   execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\"}'", function(result) {
@@ -43,7 +34,7 @@ function getDockerLogID() {
       //console.log(containerList[i]);
     }
     var containerJSONArr = JSON.stringify(containerList, null, 2);
-    console.log(containerJSONArr);
+    //console.log(containerJSONArr);
     fs.writeFile('containersJSON.json', containerJSONArr, err => {
       if (err) {
         console.log('Error writing file', err)
@@ -54,9 +45,33 @@ function getDockerLogID() {
     //execCommand(JSON.stringify(containerJSONArr) + " > containersJSON.json", function(result){});
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
-      execCommand("docker logs -t " + id + " > " + id + ".txt", function(result) {});
+      execCommand("docker logs -t " + id, function(result) {
+        var streamPackage = [];
+        var logString = result.split("\n");
+        //console.log(id + ":");
+        for (var j=0; j < logString.length-1; j++) {
+          //Grabs the RFC timestamp and converts it to ISO
+          let isoStr = new Date(logString[j].split(" ")[0]).toISOString();
+          //Grabs the rest of the data 
+          let logLine = logString[j].substr(logString[j].indexOf(" ") + 1);
+          //Packages it into a tuple
+          var streamData = [isoStr, logLine];
+          streamPackage[j] = streamData;
+        }
+        fs.writeFile(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+          if (err) {
+            console.log('Error writing file', err)
+          } else {
+            console.log('Successfully wrote file')
+          }
+        })
+      });
     }
   });
+}
+
+function getCassandraLogs() {
+
 }
 
 // Verifies if the user is authenticated, returns a status code of 200 if so
@@ -230,7 +245,6 @@ async function main() {
   // let home_info = await getHomeDirectory()
   // let home_info_id = JSON.parse(home_info).directory[0].id
   // postStream(home_info_id, "tempName1312")
-  //RFCToISO();
   getDockerLogID();
   //execCommand();
   //console.log(home_Directory)
