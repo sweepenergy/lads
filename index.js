@@ -42,7 +42,7 @@ function getDockerLogID() {
       containerList[i] = JSON.parse(temp[i]);
       //console.log(containerList[i]);
     }
-    var containerJSONArr = JSON.stringify(containerList);
+    var containerJSONArr = JSON.stringify(containerList, null, 2);
     console.log(containerJSONArr);
     fs.writeFile('containersJSON.json', containerJSONArr, err => {
       if (err) {
