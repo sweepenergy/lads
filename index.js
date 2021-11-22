@@ -164,7 +164,7 @@ async function getDirectoryByID(directory_id) {
 function postStream(id, name) {
   var data_name = '"' + name + '"'
   var data_id = '"' + id + '"'
-  var data = '{\n    "directory_id": ' + data_id + ',\n    "name": ' + data_name + ',\n    "ts": []\n}';
+  var data = '{\n    "directory_id": ' + data_id + ',\n    "name": ' + data_name + ',\n    "ts": [{"id": "log_maintenance","name": "Maintenance Log","description": "Maintenance Log over time","unit": "unitless","type": "text"}]\n}';
 
   var config = {
     method: 'post',
@@ -186,44 +186,47 @@ function postStream(id, name) {
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
-function postStreamDataset(stream_id, ts_param_text, ts) {
+function postStreamDataset(stream_id, ts_param_text) {
   // takes in an array of tuples: [timestamp, data]
-  var data = JSON.stringify([
-    [
-      "",
-      "hello"
-    ],
-    [
-      "",
-      "world"
-    ],
-    [
-      "",
-      "I'm"
-    ],
-    [
-      "",
-      "here"
-    ]
-  ]);
-  
-  var config = {
-    method: 'post',
-    url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/ ' + ts_param_text + '/dataset',
-    headers: { 
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${auth_token}`
-    },
-    data : data
-  };
-  
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
+  fs.readFile('4812b7648ab6.txt', 'utf8', function(err, data){
+    console.log(data)
+    new_data = JSON.stringify(data)
+    var config = {
+      method: 'post',
+      url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/ ' + ts_param_text + '/dataset',
+      headers: { 
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${auth_token}`
+      },
+      data : new_data
+    };
+    
+    axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
   });
+  // var data = JSON.stringify([
+  //   [
+  //     "",
+  //     "hello"
+  //   ],
+  //   [
+  //     "",
+  //     "world"
+  //   ],
+  //   [
+  //     "",
+  //     "I'm"
+  //   ],
+  //   [
+  //     "",
+  //     "here"
+  //   ]
+  // ]);
 }
 
 // .then function for getHomeDirectory
@@ -245,8 +248,9 @@ getHomeDirectory().then(response => {
 async function main() {
   // let home_info = await getHomeDirectory()
   // let home_info_id = JSON.parse(home_info).directory[0].id
-  // postStream(home_info_id, "tempName1312")
-  getDockerLogID();
+  // postStream(home_info_id, "tempName1500")
+  // getDockerLogID();
+  postStreamDataset("14fa3498-4cc0-45c1-b5e1-a026ecc7e9ea","log_maintenance")
   //execCommand();
   //console.log(home_Directory)
   //console.log(temp)
