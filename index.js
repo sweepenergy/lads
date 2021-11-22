@@ -209,25 +209,20 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
       console.log(error);
     });
   });
-  // var data = JSON.stringify([
-  //   [
-  //     "",
-  //     "hello"
-  //   ],
-  //   [
-  //     "",
-  //     "world"
-  //   ],
-  //   [
-  //     "",
-  //     "I'm"
-  //   ],
-  //   [
-  //     "",
-  //     "here"
-  //   ]
-  // ]);
 }
+
+function createDockerStreams(directory_id) {
+  var json = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
+
+  for (let index = 0; index < json.length; index++) {
+    postStream(directory_id, json[index].ID)
+  }  
+}
+
+// function sendDockerLogData(directory_id) {
+//   let temp_info = await getDirectoryByID(directory_id)
+//   // let temp_info_id = JSON.parse(temp_info)
+// }
 
 // .then function for getHomeDirectory
 //getHomeDirectory().then(response => {
@@ -246,15 +241,17 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
+  getDockerLogID();
   let home_info = await getHomeDirectory()
   let home_info_id = JSON.parse(home_info)
   console.log(home_info_id)
 
-  let temp_info = await getDirectoryByID("e1a5770a-872e-4654-b17f-7aef2a19c603")
-  let temp_info_id = JSON.parse(temp_info).stream[0].id
-  console.log(temp_info_id)
+  let temp_info = await getDirectoryByID(home_info_id.directory[0].id)
+  let temp_info_id = JSON.parse(temp_info)
+  // console.log(temp_info_id.stream[0].id)
+  // console.log(temp_info_id.stream.length)
   // postStream(home_info_id, "Docker")
-  // getDockerLogID();
+  createDockerStreams(home_info_id.directory[0].id);
   // postStreamDataset("0f13a9ce-fbe7-4cf4-8e46-cbccf8ced5ef","log_maintenance", "29f67257d4e2")
   //execCommand();
   //console.log(home_Directory)
