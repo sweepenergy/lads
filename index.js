@@ -191,7 +191,6 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
   let fileName = containerID + '.txt'
   fs.readFile(fileName, 'utf8', function(err, data){
     console.log(data)
-    new_data = JSON.stringify(data)
     var config = {
       method: 'post',
       url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
@@ -199,7 +198,7 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${auth_token}`
       },
-      data : new_data
+      data : data
     };
     
     axios(config)
@@ -231,27 +230,32 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
 }
 
 // .then function for getHomeDirectory
-getHomeDirectory().then(response => {
-  directory_info_home = response;
+//getHomeDirectory().then(response => {
+  //directory_info_home = response;
   //console.log(temp)
-});
+//});
 
 // .then function for getDirectoryByID
-// getDirectoryByID().then(response => {
-//   directory_info_by_id = response;
-//   //console.log(temp)
-// });
+//getDirectoryByID().then(response => {
+  //directory_info_by_id = response;
+  //console.log(temp)
+//});
 
 
 // made main function an async function
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  // let home_info = await getHomeDirectory()
-  // let home_info_id = JSON.parse(home_info).directory[0].id
-  // postStream(home_info_id, "tempName1500")
+  let home_info = await getHomeDirectory()
+  let home_info_id = JSON.parse(home_info)
+  console.log(home_info_id)
+
+  let temp_info = await getDirectoryByID("e1a5770a-872e-4654-b17f-7aef2a19c603")
+  let temp_info_id = JSON.parse(temp_info).stream[0].id
+  console.log(temp_info_id)
+  // postStream(home_info_id, "Docker")
   // getDockerLogID();
-  postStreamDataset("14fa3498-4cc0-45c1-b5e1-a026ecc7e9ea","log_maintenance")
+  // postStreamDataset("0f13a9ce-fbe7-4cf4-8e46-cbccf8ced5ef","log_maintenance", "29f67257d4e2")
   //execCommand();
   //console.log(home_Directory)
   //console.log(temp)
