@@ -186,14 +186,15 @@ function postStream(id, name) {
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
-function postStreamDataset(stream_id, ts_param_text) {
+function postStreamDataset(stream_id, ts_param_text, containerID) {
   // takes in an array of tuples: [timestamp, data]
-  fs.readFile('4812b7648ab6.txt', 'utf8', function(err, data){
+  let fileName = containerID + '.txt'
+  fs.readFile(fileName, 'utf8', function(err, data){
     console.log(data)
     new_data = JSON.stringify(data)
     var config = {
       method: 'post',
-      url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/ ' + ts_param_text + '/dataset',
+      url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
       headers: { 
         'Content-Type': 'application/json',
         Authorization: `Bearer ${auth_token}`
