@@ -71,8 +71,28 @@ function getDockerLogID() {
   });
 }
 
-function getCassandraLogs() {
+function getCassandraLogs(directory="/var/log/cassandra/system.log") {
+  execCommand("input = " + directory, function(result) {
+    execCommand("while read line; do echo $line; done < " + directory, function(result){
+      var streamPackage = [];
+      var logString = result.split("\n");
+      for (var i = 0; i< logString.length-1; i++) {
+        //var words = logString.split(' ');
+        let isoStr = new Date(logString[i].split(" ")[2]).toISOString();
+        //console.log(isoStr);
+        var streamData = [isoStr, logString[i]];
+        streamPackage[i] = streamData;
+      }
 
+      fs.writeFile('cassandra_logs.txt', JSON.stringify(streamPackage, null, 2), err => {
+        if (err) {
+          console.log('Error writing file', err)
+        } else {
+          console.log('Successfully wrote file')
+        }
+      })
+    });
+  });
 }
 
 // Verifies if the user is authenticated, returns a status code of 200 if so
@@ -242,6 +262,7 @@ function createDockerStreams(directory_id) {
 // we follow the format as such
 async function main() {
   getDockerLogID();
+  getCassandraLogs();
   let home_info = await getHomeDirectory()
   let home_info_id = JSON.parse(home_info)
   console.log(home_info_id)
