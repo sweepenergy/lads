@@ -31,11 +31,11 @@
 ## About The Project
 SweepEnergy develops IOT hardware/software technologies for the industry. One of their technologies, SweepAPI, is used to collect time-series metric data of their clients’ programs. 
 
-This data is analyzed and used by admin to create better solutions for their clients. SweepEnergy handles dozens of Docker Containers through multiple servers. However, collecting the log data for both Docker and their Cassandra Database is currently done manually. 
+This data is analyzed and used by admins to create better solutions for their clients. SweepEnergy currently handles dozens of Docker Containers through multiple servers, and collecting log data from these containers is crucial to ensuring that each container is fully functional. However, collecting the log data for both Docker and their Cassandra Database is currently done manually, which is extremely inefficient on a large scale. 
 
-To solve this problem, our team is tasked with pulling logs data from Docker Containers and Cassandra Database on multiple servers, and preparing these logs files to be sent to SweepAPI.
+To solve this problem, our team is tasked with pulling logs data from Docker Containers and Cassandra Database on multiple servers, then and preparing these logs files to be sent to SweepAPI in a JSON format. This allows for the log data to be processed autonomously rather than manually, and presented in a more readable format.
 
-Our project contains a UI that can be accessed by the admins, from which, the admin can specify which locations to pull logs from. Locations are categorized by agents.
+Our project contains a UI that can be accessed by the admins. From this UI, the admin can see all of the agents and their currently associated location, as well as modify the agents. Each agent's location can be changed and locations can be added or removed.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
