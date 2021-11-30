@@ -115,5 +115,15 @@ Project Link: [https://github.com/sweepenergy/lads](https://github.com/sweepener
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
+* [Sweep](https://sweep-ai.com/)
+* [Docker Tips](https://betterprogramming.pub/about-var-run-docker-sock-3bfd276e12fd)
+* [Portainer](https://www.portainer.io/)
+* [Portainer Documentation](https://docs.portainer.io/v/ce-2.9/api/examples)
+* [Cassandra (NoSQL) Database](https://www.geeksforgeeks.org/cassandra-nosql-database/)
+* ['Tail' Command](https://blog.robertelder.org/intro-to-tail-command/)
+* [Read/Write JSON files with Node.js](https://medium.com/@osiolabs/read-write-json-files-with-node-js-92d03cc82824)
+* [Executing Shell Commands with Node.js](https://stackabuse.com/executing-shell-commands-with-node-js/)
+* [Where are Docker Logs Stored](https://sematext.com/blog/docker-logs-location/)
+* [SweepAPI Documentation](https://docs.sweepapi.com/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
