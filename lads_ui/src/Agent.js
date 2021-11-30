@@ -1,6 +1,12 @@
 import React from 'react';
 import './App.css';
 import {getJSON} from './testLogs.js';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import Navbar from 'react-bootstrap/Navbar';
+import Nav from 'react-bootstrap/Nav';
 
 class Log extends React.Component {
 	render(){
@@ -17,7 +23,7 @@ class Agent extends React.Component {
 		var logs = [];
 		//console.log(json[1].id);
 		for (let key in json){
-			logs.push(<div className="row"><div className="col">{json[key].id}</div><div className="col">{json[key].date}</div></div>);
+			logs.push(<Row><Col>{json[key].id}</Col><Col>{json[key].date}</Col></Row>);
 		}
 		return (logs);
 	}
@@ -26,9 +32,9 @@ class Agent extends React.Component {
 		return(
 			<div className="Agent">
 				<div className="Agent-header"><h4>Agent {this.props.id}</h4></div>
-				<div className="container">
+				<Container>
 					{this.getLogs()}
-				</div>
+				</Container>
 			</div>
 		);
 	}
