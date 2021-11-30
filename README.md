@@ -49,6 +49,7 @@ These are the major frameworks and libraries used for creating this project.
 * [Express](https://expressjs.com/)
 * [Bootstrap](https://getbootstrap.com)
 * [Axios](https://github.com/axios/axios)
+* [Node.js](https://nodejs.org/en/)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
