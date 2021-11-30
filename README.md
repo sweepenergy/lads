@@ -64,6 +64,8 @@ This is how to install npm to install the necessary dependencies.
   npm install npm@latest -g
   ```
 
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Installation
 
 1. Create a FacilityOps account [here](https://app.facility-ops.com/login).
