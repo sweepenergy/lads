@@ -72,19 +72,27 @@ This is how to install npm to install the necessary dependencies.
 ### Installation
 
 1. Create a FacilityOps account [here](https://app.facility-ops.com/login).
-2. Clone the frontend and backend repo into the same folder.
+2. Clone the frontend
    ```sh
    git clone https://github.com/sweepenergy/lads/tree/1.0.0
    ```
    
-   ```sh
-   git clone https://github.com/sweepenergy/lads/tree/frontend
-   ```
-3. Install npm packages
+3. Install npm packages for the frontend
    ```sh
    npm install
    ```
-4. Enter your API token in `.env`
+   
+4. Clone the backend in the same folder
+   ```sh
+   git clone https://github.com/sweepenergy/lads/tree/frontend
+   ```
+   
+5. Install npm packages for the backend
+   ```sh
+   npm install
+   ```
+   
+6. Create and enter your API token in a file called `.env`
    ```js
    const SWEEP_API_TOKEN = 'ENTER YOUR API TOKEN';
    ```
