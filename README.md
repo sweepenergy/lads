@@ -34,7 +34,7 @@ This data is analyzed and used by admin to create better solutions for their cli
 
 To solve this problem, our team is tasked with pulling logs data from Docker Containers and Cassandra Database on multiple servers, and preparing these logs files to be sent to SweepAPI.
 
-Our project contains a UI that can be accessed by the admins, from which, the admin can specify which locations to pull logs from. Locations are categorize by agents.
+Our project contains a UI that can be accessed by the admins, from which, the admin can specify which locations to pull logs from. Locations are categorized by agents.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
