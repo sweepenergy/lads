@@ -25,7 +25,7 @@ function execCommand(command, callback) {
 }
 
 //Runs shell command docker ps and docker logs to 
-function getDockerLogID() {
+function getDockerID() {
   //Outputs Containers' info and formats it into JSON object
   execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\"}'", function(result) {
     var temp = result.split("\n");
@@ -35,13 +35,14 @@ function getDockerLogID() {
     }
     var containerJSONArr = JSON.stringify(containerList, null, 2);
     //Creates .json with containers' information
-    fs.writeFile('containersJSON.json', containerJSONArr, err => {
+    fs.writeFileSync('containersJSON.json', containerJSONArr, err => {
       if (err) {
         console.log('Error writing file', err)
       } else {
         console.log('Successfully wrote file')
       }
     })
+    /*
     //Iterates through containers' list to grab logs
     for (var i=0; i < containerList.length; i++) {
       let id = containerList[i].ID;
@@ -59,7 +60,7 @@ function getDockerLogID() {
           streamPackage[j] = streamData;
         }
         //Writes Stream Package into a .txt file
-        fs.writeFile(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+        fs.writeFileSync(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
           if (err) {
             console.log('Error writing file', err)
           } else {
@@ -68,7 +69,37 @@ function getDockerLogID() {
         })
       });
     }
+    */
   });
+}
+
+function getDockerLogs(containers) {
+  for (var i=0; i < containers.length; i++) {
+    //let id = containers[i].ID;
+    execCommand("docker logs -t " + id, function(result) {
+      var streamPackage = [];
+      var logString = result.split("\n");
+      //console.log(id + ":");
+      for (var j=0; j < logString.length-1; j++) {
+        //Grabs the RFC timestamp and converts it to ISO
+        let isoStr = new Date(logString[j].split(" ")[0]).toISOString();
+        //Grabs the rest of the data 
+        let logLine = logString[j].substr(logString[j].indexOf(" ") + 1);
+        //Packages it into a tuple
+        var streamData = [isoStr, logLine];
+        streamPackage[j] = streamData;
+      }
+      //Writes Stream Package into a .txt file
+      fs.writeFileSync(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+        if (err) {
+          console.log('Error writing file', err)
+        } else {
+          console.log('Successfully wrote file')
+        }
+      })
+    });
+  }
+
 }
 
 function getCassandraLogs(directory="/var/log/cassandra/system.log") {
@@ -261,8 +292,8 @@ function createDockerStreams(directory_id) {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  getDockerLogID();
-  getCassandraLogs();
+  getDockerID();
+  //getCassandraLogs();
   let home_info = await getHomeDirectory()
   let home_info_id = JSON.parse(home_info)
   console.log(home_info_id)
