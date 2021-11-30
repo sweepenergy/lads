@@ -20,6 +20,7 @@ const formReducer = (state, event) => {
   }
 }
 
+
 function Add() {
 	const [formData, setFormData] = useReducer(formReducer, {});
 	const handleSubmit = event => {
@@ -44,16 +45,16 @@ function Add() {
           				<select name="source" onChange={handleChange} value={formData.source || ''}>
           					<option value="">--Select--</option>
           					<option value="docker">Docker</option>
-          					<option vlue="cassandra">Cassandra</option>
+          					<option value="cassandra">Cassandra</option>
       					</select>
         			</label>
         			</p>
-        			<p>
-        			<label>
-        				File Path: &nbsp;
-          				<input name="filepath" onChange={handleChange} value={formData.filepath || ''}/>
-        			</label>
-        			</p>
+        			{formData.source ='cassandra' ? 
+        					<p><label>File Path: &nbsp;<input name="filepath" onChange={handleChange} value={formData.filepath || ''}/></label></p>
+        					: 
+        					<p>Docker</p>
+        			}
+        			
     			</fieldset>
     			<Button type="submit" value="Submit">Submit</Button>
   			</form>
