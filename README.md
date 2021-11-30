@@ -98,6 +98,13 @@ This is how to install npm to install the necessary dependencies.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+<!-- CONTACT -->
+## Contact
+
+Project Link: [https://github.com/sweepenergy/lads](https://github.com/sweepenergy/lads)
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
