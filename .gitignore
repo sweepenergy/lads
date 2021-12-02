@@ -104,4 +104,3 @@ dist
 .tern-port
 containersJSON.json
 *.txt
-running_containers/

@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const { exec } = require("child_process");
 const { stdout } = require("process");
 const fs = require('fs');
+const { ok } = require("assert");
 require('dotenv').config()
 
 const app = express();
@@ -27,7 +28,7 @@ function execCommand(command, callback) {
 //Runs shell command docker ps and docker logs to 
 function getDockerID() {
   //Outputs Containers' info and formats it into JSON object
-  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\", \"Logging-ok\": \"True\"}'", function(result) {
+  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\", \"loggingOK\": \"True\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
     for (var i=0; i < temp.length - 1; i++) {
@@ -73,33 +74,45 @@ function getDockerID() {
   });
 }
 
-function getDockerLogs(containers) {
-  for (var i=0; i < containers.length; i++) {
-    //let id = containers[i].ID;
-    execCommand("docker logs -t " + id, function(result) {
-      var streamPackage = [];
-      var logString = result.split("\n");
-      //console.log(id + ":");
-      for (var j=0; j < logString.length-1; j++) {
-        //Grabs the RFC timestamp and converts it to ISO
-        let isoStr = new Date(logString[j].split(" ")[0]).toISOString();
-        //Grabs the rest of the data 
-        let logLine = logString[j].substr(logString[j].indexOf(" ") + 1);
-        //Packages it into a tuple
-        var streamData = [isoStr, logLine];
-        streamPackage[j] = streamData;
+// Helper function to iterate through all running containers
+// Only logs containers that have "loggingOk" set to True
+function getDockerLogs() {
+  fs.readFile('containersJSON.json', 'utf8', function(err, data){
+    var containers = JSON.parse(data);
+    console.log(containers.length);
+    for(var index = 0; index < containers.length; index++) {
+      if (containers[index].loggingOK == 'True') {
+        getDockerLogsByID(containers[index].ID);
       }
-      //Writes Stream Package into a .txt file
-      fs.writeFileSync('running_containers/' + id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
-        if (err) {
-          console.log('Error writing file', err)
-        } else {
-          console.log('Successfully wrote file')
-        }
-      })
-    });
-  }
+    }
+  });
+}
 
+// Takes a single Container ID and outputs its logs to running_containers directory
+function getDockerLogsByID(ID) {
+  execCommand("docker logs -t " + ID, function(result) {
+    var streamPackage = [];
+    var logString = result.split("\n");
+    //console.log(id + ":");
+    for (var j=0; j < logString.length-1; j++) {
+      //Grabs the RFC timestamp and converts it to ISO
+      let isoStr = new Date(logString[j].split(" ")[0]).toISOString();
+      //Grabs the rest of the data 
+      let logLine = logString[j].substr(logString[j].indexOf(" ") + 1);
+      //Packages it into a tuple
+      var streamData = [isoStr, logLine];
+      streamPackage[j] = streamData;
+    }
+    //Writes Stream Package into a .txt file
+    fs.writeFileSync('running_containers/' + ID + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+      if (err) {
+        console.log('Error writing file', err)
+      } else {
+        console.log('Successfully wrote file')
+      }
+    })
+  });
+  
 }
 
 function getCassandraLogs(directory="/var/log/cassandra/system.log") {
@@ -293,6 +306,7 @@ function createDockerStreams(directory_id) {
 // we follow the format as such
 async function main() {
   getDockerID();
+  getDockerLogs();
   //getCassandraLogs();
 
   // let home_info = await getHomeDirectory()
