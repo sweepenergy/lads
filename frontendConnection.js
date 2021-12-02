@@ -14,6 +14,7 @@ app.listen(port, () => {
 });
 
 app.get('/dockercontainers', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     fs.readFile('containersJSON.json', 'utf8', function(err, data){
         // console.log(data)
         return res.send(JSON.parse(data));
@@ -22,6 +23,7 @@ app.get('/dockercontainers', (req, res) => {
 });
   
 app.post('/locationupdates', (req, res) => {
+    res.set('Access-Control-Allow-Origin', '*');
     // Example Request: 
     // curl -X POST -H "Content-Type: application/json" -d '{"container": "alpha", "id": "238C88d3nHD6", "logging-ok" : "false"}' localhost:4000/locationupdates
     console.log(req.body);

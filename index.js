@@ -27,7 +27,7 @@ function execCommand(command, callback) {
 //Runs shell command docker ps and docker logs to 
 function getDockerID() {
   //Outputs Containers' info and formats it into JSON object
-  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\"}'", function(result) {
+  execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\", \"Logging-ok\": \"True\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
     for (var i=0; i < temp.length - 1; i++) {
@@ -90,7 +90,7 @@ function getDockerLogs(containers) {
         streamPackage[j] = streamData;
       }
       //Writes Stream Package into a .txt file
-      fs.writeFileSync(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+      fs.writeFileSync('running_containers/' + id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
         if (err) {
           console.log('Error writing file', err)
         } else {
@@ -294,16 +294,19 @@ function createDockerStreams(directory_id) {
 async function main() {
   getDockerID();
   //getCassandraLogs();
-  let home_info = await getHomeDirectory()
-  let home_info_id = JSON.parse(home_info)
-  console.log(home_info_id)
 
-  let temp_info = await getDirectoryByID(home_info_id.directory[0].id)
-  let temp_info_id = JSON.parse(temp_info)
+  // let home_info = await getHomeDirectory()
+  // let home_info_id = JSON.parse(home_info)
+  // console.log(home_info_id)
+
+  // let temp_info = await getDirectoryByID(home_info_id.directory[0].id)
+  // let temp_info_id = JSON.parse(temp_info)
   // console.log(temp_info_id.stream[0].id)
   // console.log(temp_info_id.stream.length)
   // postStream(home_info_id, "Docker")
-  createDockerStreams(home_info_id.directory[0].id);
+
+  // createDockerStreams(home_info_id.directory[0].id);
+
   // postStreamDataset("0f13a9ce-fbe7-4cf4-8e46-cbccf8ced5ef","log_maintenance", "29f67257d4e2")
   //execCommand();
   //console.log(home_Directory)
