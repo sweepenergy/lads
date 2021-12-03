@@ -302,11 +302,18 @@ function createDockerStreams(directory_id) {
   //console.log(temp)
 //});
 
+
+//checks if directories for Cassandra and Docker are already created
+//if not, they will be created here
 async function checkDirectories(){
   let home_dir = await getHomeDirectory()
   let home_info = JSON.parse(home_dir)
+
+  //booleans for checking if directories exist, initially false
   let isDocker = false
   let isCassandra = false
+
+  //parse through the directory array tocheck for directories
   for (let i = 0; i < home_info.directory.length; i++){
     if (home_info.directory[i].name == "Cassandra"){
       isCassandra = true
@@ -318,17 +325,17 @@ async function checkDirectories(){
     }
   }
 
+  //creates directories here
   if (!isDocker){
     let docker_info = await postDirectory("Docker")
     docker_json = JSON.parse(docker_info)
     dockerID = dockerID.id
   }
-  if(!isCassandra){
+  if (!isCassandra){
     let cassandra_info = await postDirectory("Cassandra")
     cassandra_json = JSON.parse(cassandra_info)
     cassandraID = cassandra_json.id
   }
-
 }
 
 // made main function an async function
