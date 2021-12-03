@@ -15,8 +15,9 @@ app.use(helmet());
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
-let dockerID = "";
-let cassandraID = "";
+let dockerDirectoryID = "";
+let cassandraDirectoryID = "";
+let cassandraStreamID = "";
 
 // Runs a shell command, currently runs docker ps and outputs to console in JSON format
 function execCommand(command, callback) {
@@ -129,11 +130,11 @@ async function checkDirectories(){
   for (let i = 0; i < home_info.directory.length; i++){
     if (home_info.directory[i].name == "Cassandra"){
       isCassandra = true
-      cassandraID = home_info.directory[i].id
+      cassandraDirectoryID = home_info.directory[i].id
     }
     else if (home_info.directory[i].name == "Docker"){
       isDocker = true
-      dockerID = home_info.directory[i].id
+      dockerDirectoryID = home_info.directory[i].id
     }
   }
 
@@ -141,12 +142,12 @@ async function checkDirectories(){
   if (!isDocker){
     let docker_info = await postDirectory("Docker")
     docker_json = JSON.parse(docker_info)
-    dockerID = docker_json.id
+    dockerDirectoryID = docker_json.id
   }
   if (!isCassandra){
     let cassandra_info = await postDirectory("Cassandra")
     cassandra_json = JSON.parse(cassandra_info)
-    cassandraID = cassandra_json.id
+    cassandraDirectoryID = cassandra_json.id
   }
 }
 
@@ -178,10 +179,9 @@ async function postStream(id, name) {
 
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
-function postStreamDataset(stream_id, ts_param_text, containerID) {
+function postStreamDataset(stream_id, ts_param_text, containerID, fileName) {
   // takes in an array of tuples: [timestamp, data]
-  let fileName = containerID + '.txt'
-  fs.readFile("running_containers/" + fileName, 'utf8', function(err, data){
+  fs.readFile(fileName, 'utf8', function(err, data){
     var config = {
       method: 'post',
       url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
@@ -258,6 +258,14 @@ async function checkDockerStreams(directory_id) {
       // console.log('Successfully wrote file')
     }
   })
+}
+
+
+// Helper function to create Stream for sending Cassandra logs
+async function createCassandraStream(directory_id) {
+  if (cassandraStreamID == "") {
+    cassandraStreamID = JSON.parse(await postStream(directory_id, "cassandra")).id;
+  }
 }
 
 
@@ -392,7 +400,8 @@ function sendDockerLogs() {
       streamID = streamToContainers[containerID]
       // console.log(streamID)
       // console.log(containerID)
-      postStreamDataset(streamID, "log_maintenance", containerID)
+      let fileName = "running_containers/" + containerID + '.txt'
+      postStreamDataset(streamID, "log_maintenance", containerID, fileName)
     }
   });
 }
@@ -400,7 +409,8 @@ function sendDockerLogs() {
 
 // Sends all Cassandra logs to SweepAPI
 function sendCassandraLogs() {
-  return 1
+  let fileName = "cassandra_logs.txt"
+  postStreamDataset(cassandraStreamID, "log_maintenance", "cassandra", fileName)
 }
 
 // made main function an async function
@@ -410,11 +420,11 @@ async function main() {
   console.log("Starting Server and Docker Log Monitoring:");
   
   // Step 1: Check if Cassandra and Docker directories have been created yet, and make it not
-  // Store Directory IDs in two glodal variabels dockerID and cassandraID
+  // Store Directory IDs in two glodal variabels dockerDirectoryID and cassandraDirectoryID
   console.log("Checking for Cassandra and Docker Directories");
   await checkDirectories()
-  // console.log(cassandraID)
-  // console.log(dockerID)
+  // console.log(cassandraDirectoryID)
+  // console.log(dockerDirectoryID)
 
   // Step 2: Get list of currently running Docker containers. Output to containersJSON.json
   console.log("Getting Running Docker Containers");
@@ -423,27 +433,36 @@ async function main() {
   // Step 3: Create streams for every running Docker container if not yet created
   // Store streamID in file streamToContainerIDs.txt that associates stream ID with its Docker container ID
   console.log("Creating Docker Container Streams");
-  await createDockerStreams(dockerID)
-  // console.log(streamToContainers)
+  await createDockerStreams(dockerDirectoryID)
+
+  // Step 4: Create stream for Cassandra logs, only need one
+  // Store streamID in global variable cassandraStreamID 
+  console.log("Creating Cassandra Stream");
+  await createCassandraStream(cassandraDirectoryID)
 
   // Runs every 2 minutes. Gets updated Containers, Gets updated Logs, and Sends to SweepAPI
   var minutes = 1, the_interval = minutes * 60 * 1000;
   setInterval(async () => {
     console.log("running")
-    // Step 4: Get list of currently running Docker containers. Output to containersJSON.json
+    // Step 5: Get list of currently running Docker containers. Output to containersJSON.json
     console.log("Getting Running Docker Containers");
     await getDockerID();
 
-    // Step 3: Create streams for every running Docker container if not yet created
+    // Step 6: Create streams for every running Docker container if not yet created
     // Store streamID in file streamToContainerIDs.txt that associates stream ID with its Docker container ID
     console.log("Checking for Docker Container Streams");
-    await checkDockerStreams(dockerID)
+    await checkDockerStreams(dockerDirectoryID)
+
+    // Step 7: Create stream for Cassandra directory if not yet created
+    // Store streamID in global variable cassandraStreamID 
+    console.log("Checking for Cassandra Stream");
+    await createCassandraStream(cassandraDirectoryID)
 
     // Step 5: Runs after Cassandra and Docker Directories are created, and streams are made for all Docker Containers
     // Goes through each docker container and writes ouput to {container}.txt. where {container} is the ID for one container
     console.log("Getting Docker Container Logs");
     getDockerLogs();
-    // Goes to Cassandra location and pulls logs to store in {{ FIXME }}
+    // Goes to Cassandra location and pulls logs to store in cassandra_logs.txt
     console.log("Getting Cassandra Logs");
     //getCassandraLogs()
 
@@ -451,7 +470,7 @@ async function main() {
     console.log("Sending Docker Container Logs to SweepAPI");
     sendDockerLogs()
     console.log("Sending Cassandra Logs to SweepAPI");
-    //sendCassandraLogs()
+    sendCassandraLogs()
   }, the_interval);
 }
 
