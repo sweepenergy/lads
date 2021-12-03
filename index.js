@@ -15,6 +15,9 @@ app.use(helmet());
 auth_user_id = process.env.SWEEP_API_ID /// user key from api_keys
 auth_token = process.env.SWEEP_API_TOKEN // token from api_keys
 
+let dockerID = "";
+let cassandraID = "";
+
 // Runs a shell command, currently runs docker ps and outputs to console in JSON format
 function execCommand(command, callback) {
   exec(command, function (error, stdout, stderr) {
@@ -171,10 +174,10 @@ async function getHomeDirectory() {
       console.log(error)
     } 
 }
-  
+
 // POST Create Directory from SweepAPI: Takes a directory name and returns a new directory
 //If ID is empty, the directory is created in home
-function postDirectory(name, ID = "") {
+async function postDirectory(name, ID = "") {
   var data = JSON.stringify({
     "name": name,
     "dirtop": ID
@@ -195,13 +198,12 @@ function postDirectory(name, ID = "") {
     data : data
   };
 
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  try {
+    const response = await axios(config);
+    return JSON.stringify(response.data)
+  } catch (error){
+    console.log(error)
+  }
 }
 
 // GET Directory Given ID from SweepAPI: Takes a directory ID, and returns a directory name
@@ -300,13 +302,40 @@ function createDockerStreams(directory_id) {
   //console.log(temp)
 //});
 
+async function checkDirectories(){
+  let home_dir = await getHomeDirectory()
+  let home_info = JSON.parse(home_dir)
+  let isDocker = false
+  let isCassandra = false
+  for (let i = 0; i < home_info.directory.length; i++){
+    if (home_info.directory[i] == "Cassandra"){
+      isCassandra = true
+    }
+    else if (home_info.directory[i] == "Docker"){
+      isDocker = true
+    }
+  }
+
+  if (!isDocker){
+    let docker_info = await postDirectory("Docker")
+    docker_json = JSON.parse(docker_info)
+    dockerID = dockerID.id
+  }
+  if(!isCassandra){
+    let cassandra_info = await postDirectory("Cassandra")
+    cassandra_json = JSON.parse(cassandra_info)
+    cassandraID = cassandra_json.id
+  }
+}
 
 // made main function an async function
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  getDockerID();
-  getDockerLogs();
+  checkDirectories();
+
+  //getDockerID();
+  //getDockerLogs();
   //getCassandraLogs();
 
   // let home_info = await getHomeDirectory()
