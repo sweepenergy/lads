@@ -82,7 +82,7 @@ function getDockerID() {
 function getDockerLogs() {
   fs.readFile('containersJSON.json', 'utf8', function(err, data){
     var containers = JSON.parse(data);
-    console.log(containers.length);
+    // console.log(containers.length);
     for(var index = 0; index < containers.length; index++) {
       if (containers[index].loggingOK == 'True') {
         getDockerLogsByID(containers[index].ID);
@@ -254,8 +254,7 @@ async function postStream(id, name) {
 function postStreamDataset(stream_id, ts_param_text, containerID) {
   // takes in an array of tuples: [timestamp, data]
   let fileName = containerID + '.txt'
-  fs.readFile(fileName, 'utf8', function(err, data){
-    console.log(data)
+  fs.readFile("running_containers/" + fileName, 'utf8', function(err, data){
     var config = {
       method: 'post',
       url: 'https://api.sweepapi.com/stream/' + stream_id + '/ts/' + ts_param_text + '/dataset',
@@ -268,7 +267,7 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
     
     axios(config)
     .then(function (response) {
-      console.log(JSON.stringify(response.data));
+      // console.log(JSON.stringify(response.data));
     })
     .catch(function (error) {
       console.log(error);
@@ -278,23 +277,26 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
 
 async function createDockerStreams(directory_id) {
   let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
-  let streamIdToContainerId = {}
+  let streamToContainers = {}
 
   for (let index = 0; index < containers.length; index++) {
     // console.log(directory_id);
     // console.log(containers[index].ID);
-    streamID = await postStream(directory_id, containers[index].ID);
-    streamIdToContainerId[containers[index].ID] = JSON.parse(streamID).id
-    // console.log(streamID);
+    streamID = JSON.parse(await postStream(directory_id, containers[index].ID)).id;
+    containerID = containers[index].ID
+    streamToContainers[index] = [streamID, containerID];
+    // streamToContainers[containers[index].ID] = JSON.parse(streamID).id
+    // console.log(streamToContainers);
   }  
-
-  return streamIdToContainerId
+  
+  fs.writeFile('streamToContainerIDs.txt', JSON.stringify(streamToContainers, null, 2), err => {
+    if (err) {
+      console.log('Error writing file', err)
+    } else {
+      // console.log('Successfully wrote file')
+    }
+  })
 }
-
-// function sendDockerLogData(directory_id) {
-//   let temp_info = await getDirectoryByID(directory_id)
-//   // let temp_info_id = JSON.parse(temp_info)
-// }
 
 // .then function for getHomeDirectory
 //getHomeDirectory().then(response => {
@@ -344,40 +346,50 @@ async function checkDirectories(){
   }
 }
 
+function sendDockerLogs() {
+  fs.readFile('streamToContainerIDs.txt', 'utf8', function(err, data){
+    let streamToContainers = JSON.parse(data)
+    let numOfContainers = Object.keys(streamToContainers).length
+    // console.log(numOfContainers)
+    for (let index = 0; index < numOfContainers; index++) {
+      streamID = streamToContainers[index][0]
+      containerID = streamToContainers[index][1]
+      // console.log(streamID)
+      // console.log(containerID)
+      postStreamDataset(streamID, "log_maintenance", containerID)
+    }
+  });
+}
+
 
 // made main function an async function
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
+  // Step 1: Check if Cassandra and Docker directories have been created yet, and make it not
+  // Store Directory IDs in two glodal variabels dockerID and cassandraID
   await checkDirectories()
-  console.log(cassandraID)
-  console.log(dockerID)
+  // console.log(cassandraID)
+  // console.log(dockerID)
 
-  // getDockerID();
-  // getDockerLogs();
+  // Step 2: Get list of currently running Docker containers. Output to containersJSON.json
+  getDockerID();
 
-  let streamToContainers = await createDockerStreams(dockerID)
-  console.log(streamToContainers)
+  // Step 3: Create streams for every running Docker container if not yet created
+  // Store streamID in file streamToContainerIDs.txt that associates stream ID with its Docker container ID
+  await createDockerStreams(dockerID)
+  // console.log(streamToContainers)
 
-  
-  //getCassandraLogs();
+  // Step 4: Runs after Cassandra and Docker Directories are created, and streams are made for all Docker Containers
+  // Goes through each docker container and writes ouput to {container}.txt. where {container} is the ID for one container
+  getDockerLogs();
+  // Goes to Cassandra location and pulls logs to store in {{ FIXME }}
+  //getCassandraLogs()
 
-  // let home_info = await getHomeDirectory()
-  // let home_info_id = JSON.parse(home_info)
-  // console.log(home_info_id)
+  // Step 5: Send log data to SweepAPI
+  sendDockerLogs()
+  //sendCassandraLogs()
 
-  // let temp_info = await getDirectoryByID(home_info_id.directory[0].id)
-  // let temp_info_id = JSON.parse(temp_info)
-  // console.log(temp_info_id.stream[0].id)
-  // console.log(temp_info_id.stream.length)
-  // postStream(home_info_id, "Docker")
-
-  // createDockerStreams(home_info_id.directory[0].id);
-
-  // postStreamDataset("0f13a9ce-fbe7-4cf4-8e46-cbccf8ced5ef","log_maintenance", "29f67257d4e2")
-  //execCommand();
-  //console.log(home_Directory)
-  //console.log(temp)
 }
 
 main().catch(console.log)
