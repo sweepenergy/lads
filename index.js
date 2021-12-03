@@ -227,7 +227,7 @@ async function getDirectoryByID(directory_id) {
 
 // POST Stream from SweepAPI: Creates a stream id
 // FIXME: Currently sends data correctly. Need to modify function to return StreamID
-function postStream(id, name) {
+async function postStream(id, name) {
   var data_name = '"' + name + '"'
   var data_id = '"' + id + '"'
   var data = '{\n    "directory_id": ' + data_id + ',\n    "name": ' + data_name + ',\n    "ts": [{"id": "log_maintenance","name": "Maintenance Log","description": "Maintenance Log over time","unit": "unitless","type": "text"}]\n}';
@@ -242,13 +242,12 @@ function postStream(id, name) {
     data : data
   };
 
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  try {
+    const response = await axios(config);
+    return JSON.stringify(response.data)
+  } catch (error){
+    console.log(error)
+  }
 }
 
 // POST Stream Dataset from SweepAPI: Takes an array of Timestamp:Data and sends to SweepAPI
@@ -277,12 +276,19 @@ function postStreamDataset(stream_id, ts_param_text, containerID) {
   });
 }
 
-function createDockerStreams(directory_id) {
-  var json = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
+async function createDockerStreams(directory_id) {
+  let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
+  let streamIdToContainerId = {}
 
-  for (let index = 0; index < json.length; index++) {
-    postStream(directory_id, json[index].ID)
+  for (let index = 0; index < containers.length; index++) {
+    // console.log(directory_id);
+    // console.log(containers[index].ID);
+    streamID = await postStream(directory_id, containers[index].ID);
+    streamIdToContainerId[containers[index].ID] = JSON.parse(streamID).id
+    // console.log(streamID);
   }  
+
+  return streamIdToContainerId
 }
 
 // function sendDockerLogData(directory_id) {
@@ -347,8 +353,13 @@ async function main() {
   console.log(cassandraID)
   console.log(dockerID)
 
-  //getDockerID();
-  //getDockerLogs();
+  // getDockerID();
+  // getDockerLogs();
+
+  let streamToContainers = await createDockerStreams(dockerID)
+  console.log(streamToContainers)
+
+  
   //getCassandraLogs();
 
   // let home_info = await getHomeDirectory()
