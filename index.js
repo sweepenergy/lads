@@ -202,7 +202,7 @@ async function postDirectory(name, ID = "") {
     const response = await axios(config);
     return JSON.stringify(response.data)
   } catch (error){
-    console.log(error)
+    //console.log(error)
   }
 }
 
@@ -308,11 +308,13 @@ async function checkDirectories(){
   let isDocker = false
   let isCassandra = false
   for (let i = 0; i < home_info.directory.length; i++){
-    if (home_info.directory[i] == "Cassandra"){
+    if (home_info.directory[i].name == "Cassandra"){
       isCassandra = true
+      cassandraID = home_info.directory[i].id
     }
-    else if (home_info.directory[i] == "Docker"){
+    else if (home_info.directory[i].name == "Docker"){
       isDocker = true
+      dockerID = home_info.directory[i].id
     }
   }
 
@@ -326,6 +328,7 @@ async function checkDirectories(){
     cassandra_json = JSON.parse(cassandra_info)
     cassandraID = cassandra_json.id
   }
+
 }
 
 // made main function an async function
