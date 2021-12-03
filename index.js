@@ -329,7 +329,7 @@ async function checkDirectories(){
   if (!isDocker){
     let docker_info = await postDirectory("Docker")
     docker_json = JSON.parse(docker_info)
-    dockerID = dockerID.id
+    dockerID = docker_json.id
   }
   if (!isCassandra){
     let cassandra_info = await postDirectory("Cassandra")
@@ -338,11 +338,14 @@ async function checkDirectories(){
   }
 }
 
+
 // made main function an async function
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  checkDirectories();
+  await checkDirectories()
+  console.log(cassandraID)
+  console.log(dockerID)
 
   //getDockerID();
   //getDockerLogs();
