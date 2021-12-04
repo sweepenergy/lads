@@ -4,6 +4,14 @@
 }
 .Agent-header {
   background-color: silver;
+  padding:2px;
+}
+.Agent-body{
+	padding:20px;
+}
+
+.Navbar {
+	background-color: 	#1c5e7a;
 }
 
 .App-body {
@@ -11,7 +19,4 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.log {
-  /*background-color:skyblue;*/
 }

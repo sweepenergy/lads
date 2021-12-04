@@ -8,28 +8,36 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-
+//import 'backend/frontendConnection.js';
 function getAgents(){
   return (
+    <Container>
     <Row>
       <Col>
-        <Agent id="Docker" />
+        <Agent id="1" />
       </Col>
       <Col>
-        <Agent id="Cassandra" />
+        <Agent id="2" />
       </Col>
     </Row>
+    <Row>
+        <Col>
+            <Agent id="3" />
+        </Col>
+        <Col>
+        <Agent id="4" />
+      </Col>
+    </Row>
+    </Container>
   );
 }
 
 function App() {
-  <Container></Container>
-  return (
-  <BrowserRouter>
-
-  <Navbar bg="dark" variant="dark">
+  return ( 
+    <BrowserRouter>
+  <Navbar variant="dark" className ="Navbar">
     <Container>
-      <Navbar.Brand>Sweep</Navbar.Brand>
+      <Navbar.Brand><h2>sweep.</h2></Navbar.Brand>
       <Nav>
         <Nav.Link href="/">Dashboard</Nav.Link>
         <Nav.Link href="/add">Add Directory</Nav.Link>
