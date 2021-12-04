@@ -25,11 +25,24 @@ app.get('/dockercontainers', (req, res) => {
 app.post('/locationupdates', (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     // Example Request: 
-    // curl -X POST -H "Content-Type: application/json" -d '{"container": "alpha", "id": "238C88d3nHD6", "logging-ok" : "false"}' localhost:4000/locationupdates
-    console.log(req.body);
+    // curl -X POST -H "Content-Type: application/json" -d '[{"containerID": "410208af55b7", "loggingOK" : "False"}, {"containerID": "7d19b89aac1d", "loggingOK" : "False"}]' localhost:4000/locationupdates
+    fs.readFile('containersJSON.json', 'utf8', function(err, data){
+        let containers = JSON.parse(data)
+        let updates = req.body
+        for (let resIndex = 0; resIndex < updates.length; resIndex++) {
+            for (let index = 0; index < containers.length; index++) {
+                if (containers[index].ID == updates[resIndex].containerID) {
+                    containers[index].loggingOK = updates[resIndex].loggingOK;
+                }
+            }
+        }
+        fs.writeFileSync('containersJSON.json', JSON.stringify(containers, null, 2), err => {
+            if (err) {
+              console.log('Error writing file', err)
+            } else {
+              console.log('Successfully wrote file')
+            }
+          })
+    });
     return res.send('Received a POST HTTP method');
-});
-  
-app.put('/', (req, res) => {
-    return res.send('Received a PUT HTTP method');
 });

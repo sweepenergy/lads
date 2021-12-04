@@ -2,7 +2,7 @@ const express = require("express");
 const axios = require('axios');
 const helmet = require("helmet");
 const { exec } = require("child_process");
-const { stdout } = require("process");
+const { stdout, exit } = require("process");
 const fs = require('fs');
 const { ok } = require("assert");
 require('dotenv').config()
@@ -31,20 +31,19 @@ function execCommand(command, callback) {
 
 
 // Verifies if the user is authenticated, returns a status code of 200 if so
-function verifyUser(){
+async function verifyUser(){
   var config = {
     method: 'get',
     url: 'https://api.sweepapi.com/account/verify_auth',
     headers: { Authorization: `Bearer ${auth_token}` }
   };
   
-  axios(config)
-  .then(function (response) {
-    console.log(JSON.stringify(response.data));
-  })
-  .catch(function (error) {
-    console.log(error);
-  });
+  try {
+    const response = await axios(config);
+    return response.status //JSON.stringify(response.data)
+  } catch (error){
+    console.log(error)
+  } 
 }
 
 
@@ -417,6 +416,13 @@ function sendCassandraLogs() {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
+  let isAuthenticated = await verifyUser();
+  
+  if (isAuthenticated != 200) {
+    console.log("User Not Authenticated. Please update Bearer Token and try again.")
+    exit(0)
+  }
+  console.log("User Authenticated.")
   console.log("Starting Server and Docker Log Monitoring:");
   
   // Step 1: Check if Cassandra and Docker directories have been created yet, and make it not
@@ -458,7 +464,7 @@ async function main() {
     console.log("Checking for Cassandra Stream");
     await createCassandraStream(cassandraDirectoryID)
 
-    // Step 5: Runs after Cassandra and Docker Directories are created, and streams are made for all Docker Containers
+    // Step 8: Runs after Cassandra and Docker Directories are created, and streams are made for all Docker Containers
     // Goes through each docker container and writes ouput to {container}.txt. where {container} is the ID for one container
     console.log("Getting Docker Container Logs");
     getDockerLogs();
@@ -466,7 +472,7 @@ async function main() {
     console.log("Getting Cassandra Logs");
     //getCassandraLogs()
 
-    // Step 6: Send log data to SweepAPI
+    // Step 9: Send log data to SweepAPI
     console.log("Sending Docker Container Logs to SweepAPI");
     sendDockerLogs()
     console.log("Sending Cassandra Logs to SweepAPI");
