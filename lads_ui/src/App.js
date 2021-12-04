@@ -14,18 +14,18 @@ function getAgents(){
     <Container>
     <Row>
       <Col>
-        <Agent id="1" />
+        <Agent id="Agent1" />
       </Col>
       <Col>
-        <Agent id="2" />
+        <Agent id="Agent2" />
       </Col>
     </Row>
     <Row>
         <Col>
-            <Agent id="3" />
+            <Agent id="Agent3" />
         </Col>
         <Col>
-        <Agent id="4" />
+        <Agent id="Agent4" />
       </Col>
     </Row>
     </Container>

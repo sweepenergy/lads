@@ -11,7 +11,7 @@ class Agent extends React.Component {
 	constructor(props){
 		super(props);
 
-		fuckme('http://localhost:4000/dockercontainers','wah');
+		fuckme('http://localhost:4000/dockercontainers',this.props.id);
 	}
 	// getLogs(){
 	// 	var json = getJSON();
@@ -28,7 +28,7 @@ class Agent extends React.Component {
 		return(
 			<div className="Agent">
 				<Container className="Agent-header">Agent {this.props.id}</Container>
-				<Container className="Agent-body" id="wah">
+				<Container className="Agent-body" id={this.props.id}>
 					wah
 				</Container>
 			</div>

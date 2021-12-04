@@ -104,11 +104,10 @@ function Add() {
         					<p><label>File Path: &nbsp;<input name="filepath" onChange={handleChange} value={formData.filepath || ''}/></label></p>
         					: 
         					formData.source == 'docker' ? 
-                      <p><Container id="fucku">Containers</Container></p>
+                      <p><Container id="fucku">{fuckme('http://localhost:4000/dockercontainers','fucku')}</Container></p>
                       : 
                       <p></p>
         			}
-        	{fuckme('http://localhost:4000/dockercontainers','fucku')}
     			</fieldset>
     			<Button type="submit" value="Submit">Submit</Button>
   			</form>
