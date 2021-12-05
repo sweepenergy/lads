@@ -369,15 +369,20 @@ function getCassandraLogs(directory="/var/log/cassandra/system.log") {
     execCommand("while read line; do echo $line; done < " + directory, function(result){
       var streamPackage = [];
       var logString = result.split("\n");
-      var log;
+      var log = "";
       for (var i = 0; i< logString.length-1; i++) {
         //console.log(logString[i].split(" ").slice(2, 4).join('T').replace(',', '.').concat('', 'Z'))
         //let isoStr = new Date(logString[i].split(" ").slice(2, 4)).toISOString();
         let isoStr = new Date(logString[i].split(" ").slice(2, 4).join('T').replace(',', '.').concat('', 'Z'));
         //console.log(isoStr)
         if (isoStr != null) {
-          var streamData = [isoStr, logString[i]];
+          log = logString[i];
+          var streamData = [isoStr, log];
           streamPackage.push(streamData);
+          log = "";
+        }
+        else {
+          log = log + " " + logString[i];
         }
       }
 
@@ -473,7 +478,8 @@ async function getAndSend() {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  let isAuthenticated = await verifyUser();
+  getCassandraLogs();
+  /*let isAuthenticated = await verifyUser();
   
   if (isAuthenticated != 200) {
     console.log("User Not Authenticated. Please update Bearer Token and try again.")
@@ -513,6 +519,7 @@ async function main() {
   setInterval(async () => {
     await getAndSend();
   }, the_interval);
+  */
 }
 
 main().catch(console.log)
