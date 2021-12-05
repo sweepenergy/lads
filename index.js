@@ -377,7 +377,7 @@ function getCassandraLogs(directory="/var/log/cassandra/system.log") {
         streamPackage[i] = streamData;
       }
 
-      fs.writeFile('cassandra_logs.txt', JSON.stringify(streamPackage, null, 2), err => {
+      fs.writeFile('running_cassandra/cassandra_logs.txt', JSON.stringify(streamPackage, null, 2), err => {
         if (err) {
           console.log('Error writing file', err)
         } else {
@@ -407,13 +407,24 @@ function sendDockerLogs() {
 }
 
 // function checks if the running_containers folder exists
-// if not, the function will create the containers
+// if not, the function will create the containers folder
 function checkContainersFolder(){
   const dir = './running_containers'
   if (!fs.existsSync(dir)){
     fs.mkdirSync('running_containers');
   } else {
     console.log('running_containers exists.')
+  }
+}
+
+// function checks if the running_cassandra folder exists
+// if not, the function will create the cassandra folder
+function checkCassandraFolder(){
+  const dir = './running_cassandra'
+  if (!fs.existsSync(dir)){
+    fs.mkdirSync('running_cassandra');
+  } else {
+    console.log('running_cassandra exists.')
   }
 }
 
@@ -437,6 +448,7 @@ async function main() {
   console.log("Starting Server and Docker Log Monitoring:");
   
   checkContainersFolder();
+  checkCassandraFolder();
 
   // Step 1: Check if Cassandra and Docker directories have been created yet, and make it not
   // Store Directory IDs in two glodal variabels dockerDirectoryID and cassandraDirectoryID
