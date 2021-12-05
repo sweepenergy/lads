@@ -21,7 +21,7 @@ app.get('/dockercontainers', (req, res) => {
     });
     // return res.send('Received a GET HTTP method on Main page');
 });
-  
+
 app.post('/locationupdates', (req, res) => {
     res.set('Access-Control-Allow-Origin', '*');
     // Example Request: 

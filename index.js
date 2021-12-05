@@ -5,6 +5,7 @@ const { exec } = require("child_process");
 const { stdout, exit } = require("process");
 const fs = require('fs');
 const { ok } = require("assert");
+const e = require("express");
 require('dotenv').config()
 
 const app = express();
@@ -405,6 +406,16 @@ function sendDockerLogs() {
   });
 }
 
+// function checks if the running_containers folder exists
+// if not, the function will create the containers
+function checkContainersFolder(){
+  const dir = './running_containers'
+  if (!fs.existsSync(dir)){
+    fs.mkdirSync('running_containers');
+  } else {
+    console.log('running_containers exists.')
+  }
+}
 
 // Sends all Cassandra logs to SweepAPI
 function sendCassandraLogs() {
@@ -425,8 +436,11 @@ async function main() {
   console.log("User Authenticated.")
   console.log("Starting Server and Docker Log Monitoring:");
   
+  checkContainersFolder();
+
   // Step 1: Check if Cassandra and Docker directories have been created yet, and make it not
   // Store Directory IDs in two glodal variabels dockerDirectoryID and cassandraDirectoryID
+  
   console.log("Checking for Cassandra and Docker Directories");
   await checkDirectories()
   // console.log(cassandraDirectoryID)
