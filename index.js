@@ -191,7 +191,7 @@ function postStreamDataset(stream_id, ts_param_text, containerID, fileName) {
       },
       data : data
     };
-    
+    console.log(data);
     axios(config)
     .then(function (response) {
       // console.log(JSON.stringify(response.data));
@@ -375,7 +375,7 @@ function getCassandraLogs(directory="/var/log/cassandra/system.log") {
         //let isoStr = new Date(logString[i].split(" ").slice(2, 4)).toISOString();
         let isoStr = new Date(logString[i].split(" ").slice(2, 4).join('T').replace(',', '.').concat('', 'Z'));
         //console.log(isoStr)
-        if (isoStr != null) {
+        if (!isNaN(isoStr.getTime())) {
           log = logString[i];
           var streamData = [isoStr, log];
           streamPackage.push(streamData);
@@ -439,7 +439,7 @@ function checkCassandraFolder(){
 
 // Sends all Cassandra logs to SweepAPI
 function sendCassandraLogs() {
-  let fileName = "cassandra_logs.txt"
+  let fileName = "running_cassandra/cassandra_logs.txt"
   postStreamDataset(cassandraStreamID, "log_maintenance", "cassandra", fileName)
 }
 
@@ -479,7 +479,7 @@ async function getAndSend() {
 // we follow the format as such
 async function main() {
   getCassandraLogs();
-  /*let isAuthenticated = await verifyUser();
+  let isAuthenticated = await verifyUser();
   
   if (isAuthenticated != 200) {
     console.log("User Not Authenticated. Please update Bearer Token and try again.")
@@ -519,7 +519,7 @@ async function main() {
   setInterval(async () => {
     await getAndSend();
   }, the_interval);
-  */
+  
 }
 
 main().catch(console.log)
