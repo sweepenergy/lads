@@ -4,6 +4,8 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
+import axios from 'axios';
+import ReactCSSTransitionGroup from 'react-transition-group'; // ES6
 
 class Add extends React.Component {
   constructor(props) {
@@ -50,7 +52,8 @@ class Add extends React.Component {
       value = target.checked;
       for(var idx in this.state.content){
         if(this.state.content[idx].ID == target.value){
-          this.state.content[idx].loggingOK = value;
+          this.state.content[idx].loggingOK = value ? "True" : "False";
+
           let items = [...this.state.checked];
           items[idx] = value;
           this.setState({checked:items});
@@ -71,8 +74,10 @@ class Add extends React.Component {
   }
 
   handleSubmit(event) {
-    alert(this.state.source + ',' + JSON.stringify(this.state.content));
     console.log(this.state);
+    axios.post('http://localhost:4000/locationupdates', this.state.content)
+        .then(response => alert(response.data))
+        .catch(err => alert(err));
     event.preventDefault();
     this.handleReset();
   }
@@ -82,6 +87,7 @@ class Add extends React.Component {
   }
 
   render() {
+    var ReactCSSTransitionGroup = require('react-transition-group'); // ES5 with npm
     return (
       <Container fluid className="Add">
       <h2>Add New Directory</h2>
