@@ -11,9 +11,10 @@ import Test from './Test.js';
 class Add extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {source: '', content:[], data:[]};
+    this.state = {source: '', content:[], data:[], checked:[]};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.getJSON("http://localhost:4000/dockercontainers");
   }
   async getJSON(url){
     fetch(url)
@@ -21,32 +22,60 @@ class Add extends React.Component {
       .then(json => this.setState({data:json}))
       .catch(error => console.log(error));
     }
-    print(){
-      return this.state.data.map((el, i) => 
-          <div id={el.ID} key={i}>
-            <Row>
-              <Col><input type="checkbox" name={el.ID} value={this.state.content} onChange={this.handleChange}/></Col>
+  print(){
+    return this.state.content.map((el, i) => 
+        <div id={el.ID} key={i}>
+          <Row>
+            <Col><input type="checkbox" name="content" value={el.ID} onChange={this.handleChange} checked={this.state.checked[i]}/></Col>
             <Col>{el.ID}</Col>
             <Col>{el.Names}</Col>
             <Col>{el.Status}</Col>
-          </Row>
-          </div>          
-      )
-    }
+        </Row>
+        </div>          
+    )
+  }
 
   handleChange(event) {
     const target = event.target;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
+    var value;
 
-    this.setState({
-      [name]: value
-    });
-    console.log(this.state.content);
+    if(target.value == 'docker'){
+      this.setState({content : JSON.parse(JSON.stringify(this.state.data))});
+      var arr = []
+      for(var idx in this.state.data){
+        arr.push(this.state.data[idx].loggingOK == "True" ? true : false);
+      }
+      this.setState({checked:arr});
+    }
+
+    if(target.type == 'checkbox'){
+      value = target.checked;
+      for(var idx in this.state.content){
+        if(this.state.content[idx].ID == target.value){
+          this.state.content[idx].loggingOK = value;
+          let items = [...this.state.checked];
+          items[idx] = value;
+          this.setState({checked:items});
+          break;
+        }
+      }
+    }
+    else {
+      value = target.value;
+      this.setState({
+        [name]: value
+      });
+    }
+
+    console.log(name + ',' + value);
+    console.log(this.state);
+    this.render();
   }
 
   handleSubmit(event) {
-    alert(this.state.source + ',' + this.state.content);
+    alert(this.state.source + ',' + JSON.stringify(this.state.content));
+    console.log(this.state);
     event.preventDefault();
     this.handleReset();
   }
@@ -54,10 +83,10 @@ class Add extends React.Component {
   handleReset(){
     this.state.source = '';
     this.state.content = '';
+    this.render();
   }
 
   render() {
-    this.getJSON("http://localhost:4000/dockercontainers");
     return (
       <Container fluid className="Add">
       <h2>Add New Directory</h2>
