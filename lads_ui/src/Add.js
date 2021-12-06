@@ -75,7 +75,7 @@ class Add extends React.Component {
 
   handleSubmit(event) {
     console.log(this.state);
-    axios.post('http://localhost:4000/locationupdates', this.state.content)
+    axios.post('http://localhost:4000/locationupdates', [this.state.source, this.state.content])
         .then(response => alert(response.data))
         .catch(err => alert(err));
     event.preventDefault();
@@ -84,6 +84,7 @@ class Add extends React.Component {
 
   handleReset(){
     this.setState({source:'',content:[],checked:[]});
+    this.getJSON('http://localhost:4000/dockercontainers');
   }
 
 

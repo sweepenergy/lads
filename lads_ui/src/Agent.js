@@ -19,12 +19,14 @@ class Agent extends React.Component {
 	      .catch(error => console.log(error));
     }
 	print(){
-		var filtered = [...this.state.data];
-		for(var idx in filtered){
-			if(filtered[idx].loggingOK == "False"){
-				filtered.splice(idx,1);
+		console.log(this.state.data);
+		var filtered = [];
+		for(var idx in this.state.data){
+			if(this.state.data[idx].loggingOK == "True"){
+				filtered.push(this.state.data[idx]);
 			}
 		}
+		console.log(filtered);
 		return filtered.map((el, i) => 
 		    <div id={el.ID} key={i}>
 		      <Row>
@@ -40,7 +42,7 @@ class Agent extends React.Component {
 	wowie = setInterval(() => {
 		this.getJSON('http://localhost:4000/dockercontainers');
 		console.log(Date().toLocaleString())
-	},30*1000);		
+	},10*1000);		
 
 	render(){
 		setInterval(console.log(Date().toLocaleString()),5000);
