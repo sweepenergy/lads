@@ -36,12 +36,11 @@ class Agent extends React.Component {
 		)
 	}
 
-	//Fetch logs every x*1000 seconds
+	//Fetch logs every x seconds
 	wowie = setInterval(() => {
 		this.getJSON('http://localhost:4000/dockercontainers');
-		this.render();
 		console.log(Date().toLocaleString())
-	},5*1000);		
+	},30*1000);		
 
 	render(){
 		setInterval(console.log(Date().toLocaleString()),5000);

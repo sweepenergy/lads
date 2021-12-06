@@ -86,6 +86,11 @@ class Add extends React.Component {
     this.setState({source:'',content:[],checked:[]});
   }
 
+
+  wowie = setInterval(() => {
+    this.getJSON('http://localhost:4000/dockercontainers');
+    console.log(Date().toLocaleString())
+  },30*1000);
   render() {
     var ReactCSSTransitionGroup = require('react-transition-group'); // ES5 with npm
     return (
