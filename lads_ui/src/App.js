@@ -8,6 +8,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
+import Test from './Test.js';
 //import 'backend/frontendConnection.js';
 function getAgents(){
   return (
@@ -31,6 +32,10 @@ function getAgents(){
     </Container>
   );
 }
+function wait(){
+  var x = new Test();
+  return x;
+}
 
 function App() {
   return ( 
@@ -49,7 +54,6 @@ function App() {
       <Route path="/" element={getAgents()} />
       <Route path="/add*" element={<Add />} />
     </Routes>
-
   </Container>
   </BrowserRouter>
   );

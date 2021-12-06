@@ -13,21 +13,11 @@ class Agent extends React.Component {
 
 		fuckme('http://localhost:4000/dockercontainers',this.props.id);
 	}
-	// getLogs(){
-	// 	var json = getJSON();
-	// 	//console.log(json);
-	// 	var logs = [];
-	// 	//console.log(json[1].id);
-	// 	for (let key in json){
-	// 		logs.push(<Row><Col>{json[key].ID}</Col><Col>{json[key].Names}</Col><Col>{json[key].Status}</Col></Row>);
-	// 	}
-	// 	return (logs);
-	// }
 		
 	render(){
 		return(
 			<div className="Agent">
-				<Container className="Agent-header">Agent {this.props.id}</Container>
+				<Container className="Agent-header">{this.props.id}</Container>
 				<Container className="Agent-body" id={this.props.id}>
 					wah
 				</Container>

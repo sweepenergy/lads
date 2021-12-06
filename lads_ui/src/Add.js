@@ -6,113 +6,105 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import fuckme from './AppFetch.js';
-
-// async function getJSON(url) {
-//     const response = await axios.get(url);
-//     return response.data;
-// }
-// function displayLogs(url){
-//   var json = [];
-//   getJSON(url).then(data => {
-//     for(var x in data){
-//       json.push(data[x]);
-//     }
-//     console.log(json);
-//     //return data;
-//   });
-//   console.log(json);
-//   return json;
-//   // console.log(json);
-
-//   // var logs = [];
-//   // for(var key = 0; key < json.length; key++){
-//   //   console.log(json[key].ID);
-//   //   logs.push(<p><label><Row><Col><input type="checkbox" name={json[key].ID} onChange={handleChange} /></Col><Col>{json[key].Images}</Col><Col>{json[key].Names}</Col><Col>{json[key].Status}</Col></Row></label></p>);
-//   // }
-// }
-
-
-
-// function fuckme(url, divID){
-//   let request = new XMLHttpRequest();
-//   request.open('GET', url);
-//   request.responseType = 'json';
-//   request.onload = function() {
-//     console.log(request.response);
-//     var json = (request.response);
-
-//     var element = document.querySelector("#fucku");
-//     element.innerHTML = "";
-//     console.log(json);
-//     for(var key = 0; key < json.length; key++){
-//       console.log(json[key]);
-//       element.innerHTML += '<label>'
-//       let p = '<div class="row"><div class="col"><input type="checkbox" name=' + json[key].ID + ' onChange={handleChange} id="container"/></div><div class="col">'+json[key].ID+'</div><div class="col">'+json[key].Names+'</div><div class="col">'+json[key].Status+'</div></div>';
-//       console.log(p);
-//       element.innerHTML += (p);
-//       element.innerHTML += '<\label>'
-//     }
-//   };
-//   console.log(request);
-//   request.send();
-// }
-
-function Add() {
-  const formReducer = (state, event) => {
-    if(event.reset) {
-     return {
-       source: '',
-       filepath: '',
-     }
-    }
-    return {
-      ...state,
-      [event.name]: event.value
-    }
+class Add extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {source: '', content:''};
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-	const [formData, setFormData] = useReducer(formReducer, {});
+  getJSON = function(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'json';
 
-	const handleSubmit = event => {
-		event.preventDefault();
-		console.log(event.target);
-		alert(Object.entries(formData));
-	}
-	const handleChange = event => {
-    	setFormData({
-      		name: event.target.name,
-      		value: event.target.value,
-    	});
+    xhr.onload = function() {
+
+        var status = xhr.status;
+
+        if (status == 200) {
+            callback(null, xhr.response);
+        } else {
+            callback(status);
+        }
+    };
+
+    xhr.send();
   }
 
-	return(
-		<Container className="Add">
-			<h2>Add New Directory</h2>
+  getLogs(){
+    this.getJSON('http://localhost:4000/dockercontainers', function(err, data){
+      var json = data;
+
+      var divelement = document.querySelector("#fucku");
+      divelement.innerHTML = "";
+      //console.log(json);
+      for(var key = 0; key < json.length; key++){
+        //console.log(json[key]);
+        var element = document.createElement('label');
+        element.setAttribute('style','width:100%');
+        let log = '<div class="row"><div class="col"><input type="checkbox" name=' + json[key].ID + ' onChange={this.handleChange} value={this.state.content}/></div><div class="col">'+json[key].ID+'</div><div class="col">'+json[key].Names+'</div><div class="col">'+json[key].Status+'</div></div>';
+        //console.log(p);
+        element.innerHTML += (log);
+        let p = document.createElement('p');
+        p.append(element);
+        divelement.append(p);
+      }
+    })
+}
+
+  handleChange(event) {
+    const target = event.target;
+    const value = target.type === 'checkbox' ? target.checked : target.value;
+    const name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
+    alert(this.state.source + ',' + this.state.content);
+    event.preventDefault();
+    this.handleReset();
+  }
+
+  handleReset(){
+    this.state.source = '';
+    this.state.content = '';
+  }
+
+  render() {
+    return (
+      <Container fluid className="Add">
+      <h2>Add New Directory</h2>
       &nbsp;
-			<form onSubmit={handleSubmit}>
-				<fieldset>
-					<p>
-        			<label>
-        				Source: &nbsp;
-          				<select name="source" onChange={handleChange} value={formData.source || ''}>
-          					<option value="">--Select--</option>
-          					<option value="docker">Docker</option>
-          					<option value="cassandra">Cassandra</option>
-      					</select>
-        			</label>
-        	</p>
-        			{formData.source == 'cassandra' ?
-        					<p><label>File Path: &nbsp;<input name="filepath" onChange={handleChange} value={formData.filepath || ''}/></label></p>
-        					: 
-        					formData.source == 'docker' ? 
-                      <p><Container id="fucku">{fuckme('http://localhost:4000/dockercontainers','fucku')}</Container></p>
+      <form onSubmit={this.handleSubmit}>
+        <fieldset>
+          <p>
+              <label>
+                Source: &nbsp;
+                  <select name="source" onChange={this.handleChange} value={this.state.source}>
+                    <option value="">--Select--</option>
+                    <option value="docker">Docker</option>
+                    <option value="cassandra">Cassandra</option>
+                </select>
+              </label>
+          </p>
+              {this.state.source == 'cassandra' ?
+                  <p><label>File Path: &nbsp;<input name="content" onChange={this.handleChange} value={this.state.content}/></label></p>
+                  : 
+                  this.state.source == 'docker' ? 
+                      <p><Container fluid id="fucku">{this.getLogs()}</Container></p>
                       : 
                       <p></p>
-        			}
-    			</fieldset>
-    			<Button type="submit" value="Submit">Submit</Button>
-  			</form>
-		</Container>
-	);
+              }
+          </fieldset>
+          <Button type="submit" value="Submit">Submit</Button>
+        </form>
+    </Container>
+    );
+  }
 }
 
 export default Add;
