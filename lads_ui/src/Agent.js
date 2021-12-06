@@ -11,6 +11,7 @@ class Agent extends React.Component {
 		this.state = {data:[]};
 		this.getJSON('http://localhost:4000/dockercontainers');
 	}
+	intervalId = null;
 	async getJSON(url){
 	    fetch(url)
 	      .then(response => response.json())
@@ -34,8 +35,16 @@ class Agent extends React.Component {
 		    </div>          
 		)
 	}
-		
+
+	//Fetch logs every x*1000 seconds
+	wowie = setInterval(() => {
+		this.getJSON('http://localhost:4000/dockercontainers');
+		this.render();
+		console.log(Date().toLocaleString())
+	},5*1000);		
+
 	render(){
+		setInterval(console.log(Date().toLocaleString()),5000);
 		return(
 			<div className="Agent">
 				<Container className="Agent-header">{this.props.id}</Container>

@@ -20,7 +20,7 @@ class Add extends React.Component {
       .then(response => response.json())
       .then(json => this.setState({data:json}))
       .catch(error => console.log(error));
-    }
+  }
   print(){
     return this.state.content.map((el, i) => 
         <div id={el.ID} key={i}>
