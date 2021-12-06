@@ -8,7 +8,6 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Navbar from 'react-bootstrap/Navbar';
 import Nav from 'react-bootstrap/Nav';
-import Test from './Test.js';
 //import 'backend/frontendConnection.js';
 function getAgents(){
   return (
@@ -31,10 +30,6 @@ function getAgents(){
     </Row>
     </Container>
   );
-}
-function wait(){
-  var x = new Test();
-  return x;
 }
 
 function App() {

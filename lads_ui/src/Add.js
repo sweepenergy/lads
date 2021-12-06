@@ -6,52 +6,33 @@ import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import fuckme from './AppFetch.js';
+import Test from './Test.js';
+
 class Add extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {source: '', content:''};
+    this.state = {source: '', content:[], data:[]};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-  getJSON = function(url, callback) {
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);
-    xhr.responseType = 'json';
-
-    xhr.onload = function() {
-
-        var status = xhr.status;
-
-        if (status == 200) {
-            callback(null, xhr.response);
-        } else {
-            callback(status);
-        }
-    };
-
-    xhr.send();
-  }
-
-  getLogs(){
-    this.getJSON('http://localhost:4000/dockercontainers', function(err, data){
-      var json = data;
-
-      var divelement = document.querySelector("#fucku");
-      divelement.innerHTML = "";
-      //console.log(json);
-      for(var key = 0; key < json.length; key++){
-        //console.log(json[key]);
-        var element = document.createElement('label');
-        element.setAttribute('style','width:100%');
-        let log = '<div class="row"><div class="col"><input type="checkbox" name=' + json[key].ID + ' onChange={this.handleChange} value={this.state.content}/></div><div class="col">'+json[key].ID+'</div><div class="col">'+json[key].Names+'</div><div class="col">'+json[key].Status+'</div></div>';
-        //console.log(p);
-        element.innerHTML += (log);
-        let p = document.createElement('p');
-        p.append(element);
-        divelement.append(p);
-      }
-    })
-}
+  async getJSON(url){
+    fetch(url)
+      .then(response => response.json())
+      .then(json => this.setState({data:json}))
+      .catch(error => console.log(error));
+    }
+    print(){
+      return this.state.data.map((el, i) => 
+          <div id={el.ID} key={i}>
+            <Row>
+              <Col><input type="checkbox" name={el.ID} value={this.state.content} onChange={this.handleChange}/></Col>
+            <Col>{el.ID}</Col>
+            <Col>{el.Names}</Col>
+            <Col>{el.Status}</Col>
+          </Row>
+          </div>          
+      )
+    }
 
   handleChange(event) {
     const target = event.target;
@@ -61,6 +42,7 @@ class Add extends React.Component {
     this.setState({
       [name]: value
     });
+    console.log(this.state.content);
   }
 
   handleSubmit(event) {
@@ -75,6 +57,7 @@ class Add extends React.Component {
   }
 
   render() {
+    this.getJSON("http://localhost:4000/dockercontainers");
     return (
       <Container fluid className="Add">
       <h2>Add New Directory</h2>
@@ -95,7 +78,7 @@ class Add extends React.Component {
                   <p><label>File Path: &nbsp;<input name="content" onChange={this.handleChange} value={this.state.content}/></label></p>
                   : 
                   this.state.source == 'docker' ? 
-                      <p><Container fluid id="fucku">{this.getLogs()}</Container></p>
+                      <p><Container fluid id="fucku">{this.print()}</Container></p>
                       : 
                       <p></p>
               }
