@@ -18,7 +18,7 @@ class Agent extends React.Component {
 	      .catch(error => console.log(error));
     }
 	print(){
-		var filtered = [... this.state.data];
+		var filtered = [...this.state.data];
 		for(var idx in filtered){
 			if(filtered[idx].loggingOK == "False"){
 				filtered.splice(idx,1);

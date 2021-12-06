@@ -47,7 +47,7 @@ function App() {
   <Container className="App-body">
     <Routes>
       <Route path="/" element={getAgents()} />
-      <Route path="/add*" element={<Add />} />
+      <Route path="/add" element={<Add />} />
     </Routes>
   </Container>
   </BrowserRouter>

@@ -1,12 +1,9 @@
-import React, {useReducer, useState} from 'react';
+import React from 'react';
 import './App.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
-import axios from 'axios';
-import fuckme from './AppFetch.js';
-import Test from './Test.js';
 
 class Add extends React.Component {
   constructor(props) {
@@ -81,9 +78,7 @@ class Add extends React.Component {
   }
 
   handleReset(){
-    this.state.source = '';
-    this.state.content = '';
-    this.render();
+    this.setState({source:'',content:[],checked:[]});
   }
 
   render() {
@@ -107,7 +102,7 @@ class Add extends React.Component {
                   <p><label>File Path: &nbsp;<input name="content" onChange={this.handleChange} value={this.state.content}/></label></p>
                   : 
                   this.state.source == 'docker' ? 
-                      <p><Container fluid id="fucku">{this.print()}</Container></p>
+                      <p><Container fluid>{this.print()}</Container></p>
                       : 
                       <p></p>
               }
