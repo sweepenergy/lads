@@ -1,12 +1,14 @@
 .Agent {
   margin: 20px;
-  border:4px solid silver;
+  /*border:2px solid silver;*/
 }
 .Agent-header {
   background-color: silver;
+  /*border: 2px solid silver; */
   padding:2px;
 }
 .Agent-body{
+  border: 2px solid silver;
 	padding:20px;
 }
 
@@ -33,5 +35,18 @@
   }
   to {
     color:black;
+  }
+}
+
+.fadeOut {
+  animation-duration:2s;
+  animation-name:fadeOut;
+}
+@keyframes fadeOut {
+  from {
+    opacity: 100%
+  }
+  to {
+    opacity: 0%;
   }
 }

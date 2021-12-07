@@ -120,7 +120,7 @@ class Add extends React.Component {
               }
           </fieldset>
           <Button type="submit" value="Submit">Submit</Button>
-        </form>
+      </form>
     </Container>
     );
   }

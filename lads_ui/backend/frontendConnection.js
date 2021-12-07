@@ -38,7 +38,7 @@ app.post('/locationupdates', (req, res) => {
     //         }
     //     }
     if(req.body[0] == 'docker'){
-        fs.writeFileSync('containersJSON.json', JSON.stringify(req.body[1]), err => {
+        fs.writeFileSync('containersJSON.json', JSON.stringify(req.body[1],null, 2), err => {
             if (err) {
               console.log('Error writing file', err)
             } else {

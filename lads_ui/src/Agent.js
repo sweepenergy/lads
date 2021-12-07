@@ -56,12 +56,12 @@ class Agent extends React.Component {
 
 	render(){
 		return(
-			<div className="Agent">
-				<Container className="Agent-header">{this.props.id}</Container>
+			<Container fluid className="Agent">
+				<Container fluid className="Agent-header">{this.props.id}</Container>
 				<Container className="Agent-body" id={this.props.id} >
 					{this.print()}
 				</Container>
-			</div>
+			</Container>
 		);
 	}
 }
