@@ -263,7 +263,7 @@ async function checkDockerStreams(directory_id) {
   }  
   
   // Write newest streams to streamToContainerIDs.json
-  fs.writeFile('streamToContainerIDs.json', JSON.stringify(streamToContainers, null, 2), err => {
+  fs.writeFileSync('streamToContainerIDs.json', JSON.stringify(streamToContainers, null, 2), err => {
     if (err) {
       console.log('Error writing file', err)
     } else {
