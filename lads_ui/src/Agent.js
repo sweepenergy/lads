@@ -36,9 +36,8 @@ class Agent extends React.Component {
 		return f;
     }
 	print(){
-		
 		return this.state.filtered.map((el, i) => 
-		    <div id={el.ID} key={i} className={this.state.changed ? 'update' : 'log'}>
+		    <div id={el.ID} key={el.ID} className={this.state.changed ? 'update' : 'log'}>
 		      <Row>
 		        <Col>{el.ID}</Col>
 		        <Col>{el.Names}</Col>
@@ -48,25 +47,14 @@ class Agent extends React.Component {
 		)
 	}
 
-	//Fetch logs every x seconds
+	// Fetch logs every x seconds
 	wowie = setInterval(() => {
 		this.getJSON('http://localhost:4000/dockercontainers');
 		this.setState({printed:this.print()});
 		console.log(Date().toLocaleString())
 	},15*1000);
 
-	// update(){
-	// 	var printVal;
-	// 	setInterval(() => {
-	// 		printVal = this.print();
-	// 		console.log(print)
-	// 		console.log(Date().toLocaleString());
-	// 	},10000);
-	// 	return printVal;
-	// }
-
 	render(){
-		// setInterval(console.log(Date().toLocaleString()),5000);
 		return(
 			<div className="Agent">
 				<Container className="Agent-header">{this.props.id}</Container>
