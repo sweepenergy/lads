@@ -20,6 +20,8 @@ let dockerDirectoryID = "";
 let cassandraDirectoryID = "";
 let cassandraStreamID = "";
 
+let streamToContainers = {};
+
 // Runs a shell command, currently runs docker ps and outputs to console in JSON format
 function execCommand(command, callback) {
   exec(command, function (error, stdout, stderr) {
@@ -191,7 +193,7 @@ function postStreamDataset(stream_id, ts_param_text, containerID, fileName) {
       },
       data : data
     };
-    console.log(data);
+    // console.log(data);
     axios(config)
     .then(function (response) {
       // console.log(JSON.stringify(response.data));
@@ -205,19 +207,36 @@ function postStreamDataset(stream_id, ts_param_text, containerID, fileName) {
 
 // Helper function to create streams for all currently running Docker containers
 async function createDockerStreams(directory_id) {
-  let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
-  let streamToContainers = {}
+  // Gets list of streams currently in Docker Directory on Facility Ops
+  let streams = JSON.parse(await getDirectoryByID(directory_id)).stream;
+  // console.log(streams);
+
+  // Store stream IDs and Container IDs in an key:value array
+  for (let index = 0; index < streams.length; index++) {
+    // console.log(streams[index].name + " " + streams[index].id)
+    streamToContainers[streams[index].name] = streams[index].id
+  }
+  // console.log(streamToContainers);
+
+  // Check containersJSON file for any new containers that need a stream
+  let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'))
+  let temp = fs.readFileSync('streamToContainerIDs.json', 'utf8')
+  streamsJSON = {}
+  if (temp != "") {
+    let streamsJSON = JSON.parse(fs.readFileSync('streamToContainerIDs.json', 'utf8'))
+  }
 
   for (let index = 0; index < containers.length; index++) {
-    // console.log(directory_id);
-    // console.log(containers[index].ID);
-    streamID = JSON.parse(await postStream(directory_id, containers[index].ID)).id;
-    containerID = containers[index].ID
-    // streamToContainers[index] = [containerID, streamID];
-    streamToContainers[containerID] = streamID
-    // console.log(streamToContainers);
+    containerID = containers[index].ID;
+
+    if (!(streamToContainers.hasOwnProperty(containerID)) && !(streamsJSON.hasOwnProperty(containerID))) {
+      streamID = JSON.parse(await postStream(directory_id, containerID)).id;
+      streamToContainers[containerID] = streamID;
+      // console.log(containerID + " " + streamToContainers[containerID])
+    }
   }  
   
+  // Write newest streams to streamToContainerIDs.json
   fs.writeFile('streamToContainerIDs.json', JSON.stringify(streamToContainers, null, 2), err => {
     if (err) {
       console.log('Error writing file', err)
@@ -230,27 +249,20 @@ async function createDockerStreams(directory_id) {
 
 // Helper function to check which streams are already created, and create those that haven't yet been made
 async function checkDockerStreams(directory_id) {
-  let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'));
-  let streams = JSON.parse(fs.readFileSync('streamToContainerIDs.json', 'utf8'));
-  // console.log(Object.keys(streams))
-  let streamToContainers = {}
+  // Check containersJSON file for any new containers that need a stream
+  let containers = JSON.parse(fs.readFileSync('containersJSON.json', 'utf8'))
 
   for (let index = 0; index < containers.length; index++) {
-    // console.log(directory_id);
-    // console.log(containers[index].ID);
-    containerID = containers[index].ID
-    if (streams.hasOwnProperty(containerID)) {
-      streamID = streams[containerID]
-      // console.log(containerID + "Found in streams")
-    } else {
+    containersID = containers[index].ID;
+
+    if (!(streamToContainers.hasOwnProperty(containersID))) {
+      console.log("StreamToContainers didn't have containerID: " + containerID)
       streamID = JSON.parse(await postStream(directory_id, containerID)).id;
+      streamToContainers[containersID] = streamID;
     }
-    // streamToContainers[index] = [containerID, streamID];
-    streamToContainers[containerID] = streamID
-    // streamToContainers[containers[index].ID] = JSON.parse(streamID).id
-    // console.log(streamToContainers);
   }  
   
+  // Write newest streams to streamToContainerIDs.json
   fs.writeFile('streamToContainerIDs.json', JSON.stringify(streamToContainers, null, 2), err => {
     if (err) {
       console.log('Error writing file', err)
@@ -264,7 +276,12 @@ async function checkDockerStreams(directory_id) {
 // Helper function to create Stream for sending Cassandra logs
 async function createCassandraStream(directory_id) {
   if (cassandraStreamID == "") {
-    cassandraStreamID = JSON.parse(await postStream(directory_id, "cassandra")).id;
+    let streams = JSON.parse(await getDirectoryByID(directory_id)).stream;
+    if (streams.length == 0) {
+      cassandraStreamID = JSON.parse(await postStream(directory_id, "cassandra")).id;
+    } else {
+      cassandraStreamID = streams[0].id
+    }
   }
 }
 
@@ -465,20 +482,20 @@ async function getAndSend() {
     getDockerLogs();
     // Goes to Cassandra location and pulls logs to store in cassandra_logs.txt
     console.log("Getting Cassandra Logs");
-    getCassandraLogs();
+    // getCassandraLogs();
     
     // Step 9: Send log data to SweepAPI
     console.log("Sending Docker Container Logs to SweepAPI");
     sendDockerLogs();
     console.log("Sending Cassandra Logs to SweepAPI");
-    sendCassandraLogs();
+    // sendCassandraLogs();
 }
 
 // made main function an async function
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  getCassandraLogs();
+  // getCassandraLogs();
   let isAuthenticated = await verifyUser();
   
   if (isAuthenticated != 200) {
@@ -513,12 +530,13 @@ async function main() {
   // Store streamID in global variable cassandraStreamID 
   console.log("Creating Cassandra Stream");
   await createCassandraStream(cassandraDirectoryID)
+
   await getAndSend();
   // Runs every 2 minutes. Gets updated Containers, Gets updated Logs, and Sends to SweepAPI
   var minutes = 1, the_interval = minutes * 60 * 1000;
   setInterval(async () => {
     await getAndSend();
-  }, the_interval);
+  }, 10000);
   
 }
 
