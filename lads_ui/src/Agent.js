@@ -4,52 +4,73 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
-
 class Agent extends React.Component {
 	constructor(props){
 		super(props);
-		this.state = {data:[]};
+		this.state = {data:[],filtered:[],printed:'',changed:false};
 		this.getJSON('http://localhost:4000/dockercontainers');
 	}
 	intervalId = null;
 	async getJSON(url){
 	    fetch(url)
 	      .then(response => response.json())
-	      .then(json => this.setState({data:json}))
+	      .then(json => {
+	      	if(JSON.stringify(this.state.filtered) != '[]' ){
+		      	var eq = (JSON.stringify(this.filter(json)) === JSON.stringify(this.state.filtered));
+		      	console.log(eq);
+		      	this.setState({changed:!eq});
+
+	      	}
+	      	this.setState({data:json});
+	      	this.setState({filtered:this.filter(this.state.data)});
+	      })
 	      .catch(error => console.log(error));
     }
-	print(){
-		console.log(this.state.data);
-		var filtered = [];
-		for(var idx in this.state.data){
-			if(this.state.data[idx].loggingOK == "True"){
-				filtered.push(this.state.data[idx]);
+    filter(arr){
+    	var f = [];
+		for(var idx in arr){
+			if(arr[idx].loggingOK == "True"){
+				f.push(arr[idx]);
 			}
 		}
-		console.log(filtered);
-		return filtered.map((el, i) => 
-		    <div id={el.ID} key={i}>
+		return f;
+    }
+	print(){
+		
+		return this.state.filtered.map((el, i) => 
+		    <div id={el.ID} key={i} className={this.state.changed ? 'update' : 'log'}>
 		      <Row>
 		        <Col>{el.ID}</Col>
 		        <Col>{el.Names}</Col>
 		        <Col>{el.Status}</Col>
 		    </Row>
-		    </div>          
+		    </div>         
 		)
 	}
 
 	//Fetch logs every x seconds
 	wowie = setInterval(() => {
 		this.getJSON('http://localhost:4000/dockercontainers');
+		this.setState({printed:this.print()});
 		console.log(Date().toLocaleString())
-	},10*1000);		
+	},15*1000);
+
+	// update(){
+	// 	var printVal;
+	// 	setInterval(() => {
+	// 		printVal = this.print();
+	// 		console.log(print)
+	// 		console.log(Date().toLocaleString());
+	// 	},10000);
+	// 	return printVal;
+	// }
 
 	render(){
-		setInterval(console.log(Date().toLocaleString()),5000);
+		// setInterval(console.log(Date().toLocaleString()),5000);
 		return(
 			<div className="Agent">
 				<Container className="Agent-header">{this.props.id}</Container>
-				<Container className="Agent-body" id={this.props.id}>
+				<Container className="Agent-body" id={this.props.id} >
 					{this.print()}
 				</Container>
 			</div>

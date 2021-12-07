@@ -20,3 +20,18 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.update{
+  animation-duration: 3s;
+  animation-iteration-count: infinte;
+  animation-name: update;
+}
+
+@keyframes update {
+  from {
+    color:cyan;
+  }
+  to {
+    color:black;
+  }
+}
