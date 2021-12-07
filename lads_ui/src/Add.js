@@ -93,7 +93,6 @@ class Add extends React.Component {
     console.log(Date().toLocaleString())
   },30*1000);
   render() {
-    var ReactCSSTransitionGroup = require('react-transition-group'); // ES5 with npm
     return (
       <Container fluid className="Add">
       <h2>Add New Directory</h2>
