@@ -1,14 +1,24 @@
+
 .Agent {
   margin: 20px;
-  /*border:2px solid silver;*/
+  border:2px solid lightgrey;
+  border-radius: 8px;
+  background:white;
 }
 .Agent-header {
-  background-color: silver;
+  /*font-weight:bold;*/
+  border-bottom:2px solid lightgrey;
   /*border: 2px solid silver; */
-  padding:2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.Agent-title{
+  text-align:center;
+  padding:10px;
 }
 .Agent-body{
-  border: 2px solid silver;
+  /*border: 2px solid silver;*/
 	padding:20px;
 }
 
@@ -20,12 +30,15 @@
   padding:5vh;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: top;
+  min-height: 90vh;
+  min-width: 100%;
+  background:whitesmoke;
 }
 
 .update{
   animation-duration: 3s;
-  animation-iteration-count: infinte;
+  animation-iteration-count: 1;
   animation-name: update;
 }
 

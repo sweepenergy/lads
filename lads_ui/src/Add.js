@@ -78,6 +78,7 @@ class Add extends React.Component {
     axios.post('http://localhost:4000/locationupdates', [this.state.source, this.state.content])
         .then(response => alert(response.data))
         .catch(err => alert(err));
+
     event.preventDefault();
     this.handleReset();
   }
@@ -94,7 +95,7 @@ class Add extends React.Component {
   },30*1000);
   render() {
     return (
-      <Container fluid className="Add">
+      <Container className="Add">
       <h2>Add New Directory</h2>
       &nbsp;
       <form onSubmit={this.handleSubmit}>
@@ -118,7 +119,7 @@ class Add extends React.Component {
                       <p></p>
               }
           </fieldset>
-          <Button type="submit" value="Submit">Submit</Button>
+          <Button type="submit" value="Submit" variant={this.state.submit ? "success" : "primary"}>Submit</Button>
       </form>
     </Container>
     );

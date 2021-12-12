@@ -17,7 +17,7 @@ class Agent extends React.Component {
 	      .then(json => {
 	      	if(JSON.stringify(this.state.filtered) != '[]' ){
 		      	var eq = (JSON.stringify(this.filter(json)) === JSON.stringify(this.state.filtered));
-		      	console.log(eq);
+		      	// console.log(eq);
 		      	this.setState({changed:!eq});
 
 	      	}
@@ -51,13 +51,16 @@ class Agent extends React.Component {
 	wowie = setInterval(() => {
 		this.getJSON('http://localhost:4000/dockercontainers');
 		this.setState({printed:this.print()});
-		console.log(Date().toLocaleString())
+		console.log(Date().toLocaleString());
 	},15*1000);
 
 	render(){
 		return(
-			<Container fluid className="Agent">
-				<Container fluid className="Agent-header">{this.props.id}</Container>
+			<Container className="Agent">
+				<Container className="Agent-header">
+				<b className="Agent-title">{this.props.id}</b>
+				<Row><Col>ID</Col><Col>Name</Col><Col>Status</Col></Row>
+				</Container>
 				<Container className="Agent-body" id={this.props.id} >
 					{this.print()}
 				</Container>
