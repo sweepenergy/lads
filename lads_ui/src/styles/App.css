@@ -1,4 +1,3 @@
-
 .Agent {
   margin: 20px;
   border:2px solid lightgrey;
@@ -6,9 +5,7 @@
   background:white;
 }
 .Agent-header {
-  /*font-weight:bold;*/
   border-bottom:2px solid lightgrey;
-  /*border: 2px solid silver; */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,12 +33,12 @@
   background:whitesmoke;
 }
 
+/*ANIMATIONS*/
 .update{
   animation-duration: 3s;
   animation-iteration-count: 1;
   animation-name: update;
 }
-
 @keyframes update {
   from {
     color:lime;

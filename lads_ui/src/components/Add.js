@@ -1,5 +1,4 @@
 import React from 'react';
-import './App.css';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -110,14 +109,14 @@ class Add extends React.Component {
                 </select>
               </label>
           </p>
-              {this.state.source == 'cassandra' ?
-                  <p><label>File Path: &nbsp;<input name="content" onChange={this.handleChange} value={this.state.content}/></label></p>
+          {this.state.source == 'cassandra' ?
+              <p><label>File Path: &nbsp;<input name="content" onChange={this.handleChange} value={this.state.content}/></label></p>
+              : 
+              this.state.source == 'docker' ? 
+                  <p><Container fluid>{this.print()}</Container></p>
                   : 
-                  this.state.source == 'docker' ? 
-                      <p><Container fluid>{this.print()}</Container></p>
-                      : 
-                      <p></p>
-              }
+                  <p></p>
+          }
           </fieldset>
           <Button type="submit" value="Submit" variant={this.state.submit ? "success" : "primary"}>Submit</Button>
       </form>
