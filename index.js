@@ -340,21 +340,6 @@ async function getDockerID() {
   });
 }
 
-//function to retrieve the current containers in containersJSON that don't have loggingOK set to true
-function getCurrentContainers(){
-  fs.readFile('containersJSON.json', 'utf8', function(err, data){
-    var containers = JSON.parse(data);
-    // console.log(containers.length);
-    for(var index = 0; index < containers.length - 1; index++) {
-      if (containers[index].loggingOK == 'False') {
-        containers.splice(index,index)
-        index--;
-      }
-    }
-    containers = containers
-  });
-}
-
 // Helper function to iterate through all running containers
 // Only logs containers that have "loggingOk" set to True
 function getDockerLogs() {
