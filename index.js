@@ -293,49 +293,67 @@ async function getDockerID() {
   execCommand("docker ps --format '{\"ID\":\"{{ .ID }}\", \"Image\": \"{{ .Image }}\", \"Names\":\"{{ .Names }}\", \"Status\": \"{{ .Status }}\", \"loggingOK\": \"True\"}'", function(result) {
     var temp = result.split("\n");
     var containerList = [];
+
     for (var i=0; i < temp.length - 1; i++) {
       containerList[i] = JSON.parse(temp[i]);
     }
-    var containerJSONArr = JSON.stringify(containerList, null, 2);
-    //Creates .json with containers' information
-    fs.writeFileSync('containersJSON.json', containerJSONArr, err => {
-      if (err) {
-        console.log('Error writing file', err)
-      } else {
-        console.log('Successfully wrote file')
-      }
-    })
-    /*
-    //Iterates through containers' list to grab logs
-    for (var i=0; i < containerList.length; i++) {
-      let id = containerList[i].ID;
-      execCommand("docker logs -t " + id, function(result) {
-        var streamPackage = [];
-        var logString = result.split("\n");
-        //console.log(id + ":");
-        for (var j=0; j < logString.length-1; j++) {
-          //Grabs the RFC timestamp and converts it to ISO
-          let isoStr = new Date(logString[j].split(" ")[0]).toISOString();
-          //Grabs the rest of the data 
-          let logLine = logString[j].substr(logString[j].indexOf(" ") + 1);
-          //Packages it into a tuple
-          var streamData = [isoStr, logLine];
-          streamPackage[j] = streamData;
+
+    //this will run if containersJSON.json does not exist, meaning that it is the first run of the program
+    if (!fs.existsSync('containersJSON.json')){
+      var containerJSONArr = JSON.stringify(containerList, null, 2);
+      //Creates .json with containers' information
+      fs.writeFileSync('containersJSON.json', containerJSONArr, err => {
+        if (err) {
+          console.log('Error writing file', err)
+        } else {
+          console.log('Successfully wrote file')
         }
-        //Writes Stream Package into a .txt file
-        fs.writeFileSync(id + '.txt', JSON.stringify(streamPackage, null, 2), err => {
+      })
+    } 
+
+    //this will run if we find that there is already something in containersJSON.json
+    //to prevent us from setting loggingOK to true for all currently running containers, we update their value here
+    else {
+      fs.readFile('containersJSON.json', 'utf8', function(err, data){
+        var confirmedContainers = JSON.parse(data);
+
+        //here, we go through containerList and compare it with our actual file
+        //once we find a loggingOK == 'False', we update its value accordingly in containerList
+        for (var i = 0; i < confirmedContainers.length; i++){
+          for (var j = 0; j < containerList.length; j++){
+            if (containerList[j].ID == confirmedContainers[i].ID && confirmedContainers[i].loggingOK == 'False'){
+              containerList[j].loggingOK = 'False'
+            }
+          }
+        }
+        var containerJSONArr = JSON.stringify(containerList, null, 2);
+        //Creates .json with containers' information
+        fs.writeFileSync('containersJSON.json', containerJSONArr, err => {
           if (err) {
             console.log('Error writing file', err)
           } else {
             console.log('Successfully wrote file')
           }
         })
-      });
+      })
     }
-    */
   });
 }
 
+//function to retrieve the current containers in containersJSON that don't have loggingOK set to true
+function getCurrentContainers(){
+  fs.readFile('containersJSON.json', 'utf8', function(err, data){
+    var containers = JSON.parse(data);
+    // console.log(containers.length);
+    for(var index = 0; index < containers.length - 1; index++) {
+      if (containers[index].loggingOK == 'False') {
+        containers.splice(index,index)
+        index--;
+      }
+    }
+    containers = containers
+  });
+}
 
 // Helper function to iterate through all running containers
 // Only logs containers that have "loggingOk" set to True
@@ -495,7 +513,8 @@ async function getAndSend() {
 // basically if we want to do the same for every other function
 // we follow the format as such
 async function main() {
-  // getCassandraLogs();
+  //getCassandraLogs();
+
   let isAuthenticated = await verifyUser();
   
   if (isAuthenticated != 200) {
@@ -537,7 +556,6 @@ async function main() {
   setInterval(async () => {
     await getAndSend();
   }, 10000);
-  
 }
 
 main().catch(console.log)
